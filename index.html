@@ -1,0 +1,4270 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>PyLab 8 — Тренажер Python</title>
+  <style>
+    :root {
+      --bg-app: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-2: #273449;
+      --bg-editor: #0b1120;
+      --bg-gutter: #111a2e;
+      --bg-toolbar: #162033;
+      --bg-btn: #253349;
+      --bg-btn-hover: #31435f;
+      --border: #334155;
+      --border-subtle: #233044;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-run: #10b981;
+      --accent-run-hover: #059669;
+      --accent-run-text: #ffffff;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a78bfa;
+      --accent-amber: #fbbf24;
+      --accent-pink: #f472b6;
+      --accent-teal: #2dd4bf;
+      --danger: #f43f5e;
+      --danger-bg: rgba(244, 63, 94, 0.14);
+      --danger-border: rgba(244, 63, 94, 0.45);
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      --font-mono: ui-monospace, "JetBrains Mono", "Fira Code", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+      --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+    }
+
+    html[data-theme="light"] {
+      --bg-app: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-surface-2: #e2e8f0;
+      --bg-editor: #ffffff;
+      --bg-gutter: #f8fafc;
+      --bg-toolbar: #f8fafc;
+      --bg-btn: #e2e8f0;
+      --bg-btn-hover: #cbd5e1;
+      --border: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent-run: #059669;
+      --accent-run-hover: #047857;
+      --accent-run-text: #ffffff;
+      --accent-blue: #0284c7;
+      --accent-purple: #7c3aed;
+      --accent-amber: #d97706;
+      --accent-pink: #db2777;
+      --accent-teal: #0d9488;
+      --danger: #e11d48;
+      --danger-bg: rgba(225, 29, 72, 0.08);
+      --danger-border: rgba(225, 29, 72, 0.35);
+      --shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      overscroll-behavior: none;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100dvh;
+      max-width: 100vw;
+      overflow: hidden;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Top Header */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 6px 8px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 30;
+    }
+
+    .top-left, .top-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 40px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-btn);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: background 0.12s ease, transform 0.08s ease, border-color 0.12s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn svg {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+    }
+
+    .btn-run {
+      background: var(--accent-run);
+      border-color: var(--accent-run);
+      color: var(--accent-run-text);
+      padding: 0 14px;
+      font-weight: 700;
+    }
+
+    .btn-run:hover {
+      background: var(--accent-run-hover);
+    }
+
+    .btn-run.running {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .mode-switch {
+      display: inline-flex;
+      background: var(--bg-app);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .mode-btn {
+      min-height: 36px;
+      padding: 0 9px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .mode-btn.active {
+      background: var(--bg-surface-2);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Toolbars */
+    .toolbars-wrap {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-toolbar);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .tool-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .tool-row:last-child {
+      border-bottom: none;
+    }
+
+    .tool-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tool-row.hidden {
+      display: none;
+    }
+
+    .row-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 4px 7px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .tag-random { background: rgba(167, 139, 250, 0.18); color: var(--accent-purple); }
+    .tag-math { background: rgba(56, 189, 248, 0.18); color: var(--accent-blue); }
+    .tag-tk { background: rgba(45, 212, 191, 0.18); color: var(--accent-teal); }
+    .tag-msg { background: rgba(251, 191, 36, 0.18); color: var(--accent-amber); }
+
+    .key-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      min-height: 40px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-btn);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+
+    .key-btn:active {
+      background: var(--bg-btn-hover);
+      transform: scale(0.95);
+    }
+
+    .key-btn.struct {
+      color: var(--accent-amber);
+      border-color: rgba(251, 191, 36, 0.35);
+    }
+
+    .key-btn.kw {
+      color: var(--accent-blue);
+    }
+
+    .key-btn.mod-import {
+      color: var(--accent-teal);
+      border-color: rgba(45, 212, 191, 0.35);
+    }
+
+    .key-btn.mod-random {
+      color: var(--accent-purple);
+    }
+
+    .key-btn.mod-math {
+      color: var(--accent-blue);
+    }
+
+    .key-btn.mod-tk {
+      color: var(--accent-teal);
+    }
+
+    .key-btn.mod-msg {
+      color: var(--accent-amber);
+    }
+
+    /* Main Workspace */
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .pane {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .pane.hidden {
+      display: none !important;
+    }
+
+    .editor-pane {
+      flex: 1.15 1 0;
+      background: var(--bg-editor);
+    }
+
+    .result-pane {
+      flex: 1 1 0;
+      background: var(--bg-app);
+      border-top: 2px solid var(--border);
+    }
+
+    .workspace.mode-code .editor-pane {
+      flex: 1 1 auto;
+    }
+
+    .workspace.mode-result .result-pane {
+      flex: 1 1 auto;
+      border-top: none;
+    }
+
+    /* Editor area with line numbers */
+    .editor-wrap {
+      display: flex;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      position: relative;
+      background: var(--bg-editor);
+    }
+
+    .line-numbers {
+      width: 38px;
+      padding: 12px 6px 12px 4px;
+      background: var(--bg-gutter);
+      border-right: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      line-height: 1.5;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .line-numbers .ln-err {
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    #codeEditor {
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 12px 12px 24px 10px;
+      border: none;
+      outline: none;
+      resize: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 16px !important;
+      line-height: 1.5;
+      tab-size: 4;
+      white-space: pre;
+      overflow-x: auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      caret-color: var(--accent-blue);
+    }
+
+    /* Result Header & Content */
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .result-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .result-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--bg-surface-2);
+      color: var(--text-secondary);
+    }
+
+    .status-badge.ok {
+      background: rgba(16, 185, 129, 0.16);
+      color: var(--accent-run);
+    }
+
+    .status-badge.err {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .status-badge.wait {
+      background: rgba(251, 191, 36, 0.18);
+      color: var(--accent-amber);
+    }
+
+    .btn-mini {
+      min-height: 32px;
+      padding: 0 10px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    .result-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Interactive Input Bar */
+    .input-prompt-box {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--bg-surface);
+      border: 2px solid var(--accent-amber);
+      box-shadow: var(--shadow);
+    }
+
+    .input-prompt-box.active {
+      display: flex;
+    }
+
+    .input-prompt-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-amber);
+    }
+
+    .input-prompt-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-prompt-field {
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 42px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-editor);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      outline: none;
+    }
+
+    .input-prompt-field:focus {
+      border-color: var(--accent-amber);
+    }
+
+    /* Console Output */
+    .console-box {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--bg-editor);
+      border: 1px solid var(--border-subtle);
+      min-height: 64px;
+    }
+
+    .console-empty {
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 13px;
+    }
+
+    .console-input-echo {
+      color: var(--accent-amber);
+    }
+
+    /* Error Box (Ukrainian) */
+    .error-card {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+    }
+
+    .error-card.active {
+      display: flex;
+    }
+
+    .error-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--danger);
+    }
+
+    .error-section {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+
+    .error-section strong {
+      color: var(--danger);
+    }
+
+    .error-snippet {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--bg-editor);
+      border: 1px solid var(--danger-border);
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .error-tip {
+      font-size: 13px;
+      line-height: 1.45;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--text-primary);
+    }
+
+    /* Tkinter Window Simulator */
+    .tk-stage {
+      display: none;
+      flex-direction: column;
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #e2e8f0;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      align-self: flex-start;
+      max-width: 100%;
+    }
+
+    .tk-stage.active {
+      display: flex;
+    }
+
+    .tk-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      background: #334155;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .tk-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .tk-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    .tk-dot.r { background: #ef4444; }
+    .tk-dot.y { background: #f59e0b; }
+    .tk-dot.g { background: #10b981; }
+
+    .tk-body {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      gap: 6px;
+      background: #f0f0f0;
+      color: #111827;
+      min-width: 240px;
+      min-height: 140px;
+      max-width: 100%;
+      overflow: auto;
+    }
+
+    .tk-widget-label {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: #111827;
+      padding: 2px 6px;
+      text-align: center;
+      max-width: 100%;
+      word-break: break-word;
+    }
+
+    .tk-widget-entry {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      padding: 6px 8px;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      background: #ffffff;
+      color: #111827;
+      min-height: 36px;
+      max-width: 100%;
+      outline: none;
+    }
+
+    .tk-widget-entry:focus {
+      border-color: #2563eb;
+    }
+
+    .tk-widget-button {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      min-height: 40px;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      background: #e2e8f0;
+      color: #111827;
+      cursor: pointer;
+      max-width: 100%;
+    }
+
+    .tk-widget-button:active {
+      transform: scale(0.97);
+    }
+
+    .tk-widget-canvas {
+      display: block;
+      border: 1px solid #cbd5e1;
+      max-width: 100%;
+      height: auto;
+      background: #ffffff;
+    }
+
+    /* Messagebox Modal Overlay */
+    .tk-msg-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      z-index: 40;
+    }
+
+    .tk-msg-overlay.active {
+      display: flex;
+    }
+
+    .tk-msg-dialog {
+      width: 100%;
+      max-width: 300px;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .tk-msg-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--bg-surface-2);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .tk-msg-head.info { color: var(--accent-blue); }
+    .tk-msg-head.warn { color: var(--accent-amber); }
+    .tk-msg-head.err { color: var(--danger); }
+
+    .tk-msg-body {
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .tk-msg-foot {
+      padding: 8px 14px 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Menu Drawer & Confirm Modal */
+    .popover-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.55);
+      z-index: 60;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 58px 10px 10px;
+    }
+
+    .popover-backdrop.active {
+      display: flex;
+    }
+
+    .menu-panel {
+      width: min(290px, calc(100vw - 20px));
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .menu-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .menu-item {
+      width: 100%;
+      justify-content: flex-start;
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+
+    .menu-item.danger {
+      color: var(--danger);
+      border-color: var(--danger-border);
+      background: var(--danger-bg);
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.65);
+      z-index: 80;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .confirm-box {
+      width: min(330px, 100%);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .confirm-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .confirm-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-surface-2);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 370px) {
+      .btn { padding: 0 8px; font-size: 12px; }
+      .mode-btn { padding: 0 7px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <!-- Top Control Panel -->
+    <header class="top-bar">
+      <div class="top-left">
+        <button type="button" class="btn btn-run" id="runBtn" aria-label="Запустити програму">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <span id="runBtnLabel">Запустити</span>
+        </button>
+
+        <div class="mode-switch" role="tablist" aria-label="Режим екрана">
+          <button type="button" class="mode-btn active" data-mode="split" role="tab" aria-selected="true">Спліт</button>
+          <button type="button" class="mode-btn" data-mode="code" role="tab" aria-selected="false">Код</button>
+          <button type="button" class="mode-btn" data-mode="result" role="tab" aria-selected="false">Результат</button>
+        </div>
+      </div>
+
+      <div class="top-right">
+        <button type="button" class="btn" id="menuBtn" aria-label="Відкрити меню">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <span>Меню</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbars -->
+    <section class="toolbars-wrap" aria-label="Панелі швидкої вставки">
+      <!-- Row 1: Symbols, operators & data structures -->
+      <div class="tool-row" id="toolbarSymbols"></div>
+
+      <!-- Row 2: Python 8th grade constructs, list methods & imports -->
+      <div class="tool-row" id="toolbarConstructs"></div>
+
+      <!-- Dynamic Module Bars (Hidden by default) -->
+      <div class="tool-row hidden" id="toolbarRandom"></div>
+      <div class="tool-row hidden" id="toolbarMath"></div>
+      <div class="tool-row hidden" id="toolbarTkinter"></div>
+      <div class="tool-row hidden" id="toolbarMessagebox"></div>
+    </section>
+
+    <!-- Two Main Panes -->
+    <main class="workspace mode-split" id="workspace">
+      <!-- Pane 1: Code Editor -->
+      <section class="pane editor-pane" id="editorPane" aria-label="Редактор коду">
+        <div class="editor-wrap">
+          <div class="line-numbers" id="lineNumbers" aria-hidden="true">1</div>
+          <textarea
+            id="codeEditor"
+            autocapitalize="off"
+            autocorrect="off"
+            autocomplete="off"
+            spellcheck="false"
+            enterkeyhint="enter"
+            placeholder="# Напиши програму Python тут..."
+            aria-label="Поле введення коду Python"
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- Pane 2: Output Result -->
+      <section class="pane result-pane" id="resultPane" aria-label="Результат виконання">
+        <div class="result-header">
+          <div class="result-title-group">
+            <span class="result-label">Результат</span>
+            <span class="status-badge" id="statusBadge">Готово</span>
+          </div>
+          <button type="button" class="btn btn-mini" id="clearOutBtn">Очистити вивід</button>
+        </div>
+
+        <div class="result-scroll" id="resultScroll">
+          <!-- Interactive input() box -->
+          <form class="input-prompt-box" id="inputPromptBox">
+            <label class="input-prompt-label" id="inputPromptLabel" for="inputPromptField">Введіть значення:</label>
+            <div class="input-prompt-row">
+              <input type="text" class="input-prompt-field" id="inputPromptField" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="submit" class="btn btn-run">OK</button>
+            </div>
+          </form>
+
+          <!-- Ukrainian Error Card -->
+          <div class="error-card" id="errorCard" role="alert">
+            <div class="error-title" id="errorTitle">Помилка у програмі</div>
+            <div class="error-section" id="errorWhat"></div>
+            <pre class="error-snippet" id="errorSnippet"></pre>
+            <div class="error-tip" id="errorTip"></div>
+          </div>
+
+          <!-- Tkinter Visual Preview -->
+          <div class="tk-stage" id="tkStage">
+            <div class="tk-titlebar">
+              <div class="tk-dots">
+                <span class="tk-dot r"></span>
+                <span class="tk-dot y"></span>
+                <span class="tk-dot g"></span>
+              </div>
+              <span id="tkTitleText">tk</span>
+              <span style="width:28px"></span>
+            </div>
+            <div class="tk-body" id="tkBody"></div>
+
+            <!-- Messagebox Overlay -->
+            <div class="tk-msg-overlay" id="tkMsgOverlay" role="dialog" aria-modal="true">
+              <div class="tk-msg-dialog">
+                <div class="tk-msg-head info" id="tkMsgHead">Повідомлення</div>
+                <div class="tk-msg-body" id="tkMsgBody"></div>
+                <div class="tk-msg-foot">
+                  <button type="button" class="btn btn-run btn-mini" id="tkMsgOkBtn">OK</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Console Text Output -->
+          <pre class="console-box" id="consoleBox"><span class="console-empty">Натисни «Запустити», щоб побачити результат.</span></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Compact Menu Popover -->
+  <div class="popover-backdrop" id="menuBackdrop">
+    <div class="menu-panel" role="menu" aria-label="Меню дій">
+      <div class="menu-row-2">
+        <button type="button" class="btn menu-item" id="undoBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+          <span>Скасувати</span>
+        </button>
+        <button type="button" class="btn menu-item" id="redoBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></svg>
+          <span>Повторити</span>
+        </button>
+      </div>
+
+      <button type="button" class="btn menu-item" id="copyBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Копіювати код</span>
+      </button>
+
+      <button type="button" class="btn menu-item" id="downloadBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Завантажити .py</span>
+      </button>
+
+      <button type="button" class="btn menu-item" id="themeBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <span id="themeBtnLabel">Тема: Темна</span>
+      </button>
+
+      <button type="button" class="btn menu-item danger" id="clearCodeBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        <span>Очистити код</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Clear Code Confirmation Modal -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="confirm-box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="confirm-title" id="confirmTitle">Очистити код?</div>
+      <div class="confirm-text">Увесь написаний у редакторі код буде видалено. Ви зможете повернути його кнопкою «Скасувати».</div>
+      <div class="confirm-actions">
+        <button type="button" class="btn" id="confirmCancelBtn">Ні, залишити</button>
+        <button type="button" class="btn menu-item danger" style="width:auto;" id="confirmOkBtn">Так, очистити</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ============================================================
+         1. DOM ELEMENTS & STATE
+         ============================================================ */
+      const appShell = document.getElementById("appShell");
+      const workspace = document.getElementById("workspace");
+      const editorPane = document.getElementById("editorPane");
+      const resultPane = document.getElementById("resultPane");
+      const codeEditor = document.getElementById("codeEditor");
+      const lineNumbers = document.getElementById("lineNumbers");
+
+      const runBtn = document.getElementById("runBtn");
+      const runBtnLabel = document.getElementById("runBtnLabel");
+      const modeBtns = document.querySelectorAll(".mode-btn");
+      const menuBtn = document.getElementById("menuBtn");
+      const menuBackdrop = document.getElementById("menuBackdrop");
+      const undoBtn = document.getElementById("undoBtn");
+      const redoBtn = document.getElementById("redoBtn");
+      const copyBtn = document.getElementById("copyBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const themeBtn = document.getElementById("themeBtn");
+      const themeBtnLabel = document.getElementById("themeBtnLabel");
+      const clearCodeBtn = document.getElementById("clearCodeBtn");
+
+      const confirmModal = document.getElementById("confirmModal");
+      const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+      const confirmOkBtn = document.getElementById("confirmOkBtn");
+
+      const clearOutBtn = document.getElementById("clearOutBtn");
+      const statusBadge = document.getElementById("statusBadge");
+      const consoleBox = document.getElementById("consoleBox");
+      const errorCard = document.getElementById("errorCard");
+      const errorTitle = document.getElementById("errorTitle");
+      const errorWhat = document.getElementById("errorWhat");
+      const errorSnippet = document.getElementById("errorSnippet");
+      const errorTip = document.getElementById("errorTip");
+
+      const inputPromptBox = document.getElementById("inputPromptBox");
+      const inputPromptLabel = document.getElementById("inputPromptLabel");
+      const inputPromptField = document.getElementById("inputPromptField");
+
+      const tkStage = document.getElementById("tkStage");
+      const tkTitleText = document.getElementById("tkTitleText");
+      const tkBody = document.getElementById("tkBody");
+      const tkMsgOverlay = document.getElementById("tkMsgOverlay");
+      const tkMsgHead = document.getElementById("tkMsgHead");
+      const tkMsgBody = document.getElementById("tkMsgBody");
+      const tkMsgOkBtn = document.getElementById("tkMsgOkBtn");
+
+      const toolbarSymbols = document.getElementById("toolbarSymbols");
+      const toolbarConstructs = document.getElementById("toolbarConstructs");
+      const toolbarRandom = document.getElementById("toolbarRandom");
+      const toolbarMath = document.getElementById("toolbarMath");
+      const toolbarTkinter = document.getElementById("toolbarTkinter");
+      const toolbarMessagebox = document.getElementById("toolbarMessagebox");
+      const toastEl = document.getElementById("toast");
+
+      const STORAGE_CODE_KEY = "pylab8_saved_code_v1";
+      const STORAGE_THEME_KEY = "pylab8_theme_v1";
+      const STORAGE_MODE_KEY = "pylab8_view_mode_v1";
+
+      let currentErrorLine = null;
+      let currentRunId = 0;
+      let isRunning = false;
+      let pendingInputResolve = null;
+      let pendingInputReject = null;
+      let pendingMsgResolve = null;
+      let toastTimer = null;
+
+      /* Undo / Redo Stack */
+      const historyStack = [];
+      let historyIndex = -1;
+      let isApplyingHistory = false;
+
+      function pushHistory(value, selStart, selEnd) {
+        if (isApplyingHistory) return;
+        const top = historyStack[historyIndex];
+        if (top && top.value === value) return;
+        if (historyIndex < historyStack.length - 1) {
+          historyStack.splice(historyIndex + 1);
+        }
+        historyStack.push({ value, selStart, selEnd });
+        if (historyStack.length > 120) {
+          historyStack.shift();
+        }
+        historyIndex = historyStack.length - 1;
+      }
+
+      function applyUndo() {
+        if (historyIndex <= 0) {
+          showToast("Немає дій для скасування");
+          return;
+        }
+        historyIndex--;
+        const snap = historyStack[historyIndex];
+        isApplyingHistory = true;
+        codeEditor.value = snap.value;
+        codeEditor.setSelectionRange(snap.selStart, snap.selEnd);
+        isApplyingHistory = false;
+        onCodeChanged(false);
+        codeEditor.focus();
+      }
+
+      function applyRedo() {
+        if (historyIndex >= historyStack.length - 1) {
+          showToast("Немає дій для повторення");
+          return;
+        }
+        historyIndex++;
+        const snap = historyStack[historyIndex];
+        isApplyingHistory = true;
+        codeEditor.value = snap.value;
+        codeEditor.setSelectionRange(snap.selStart, snap.selEnd);
+        isApplyingHistory = false;
+        onCodeChanged(false);
+        codeEditor.focus();
+      }
+
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2000);
+      }
+
+      /* ============================================================
+         2. MOBILE VIEWPORT & KEYBOARD RESIZE HANDLING
+         ============================================================ */
+      function syncViewportHeight() {
+        if (window.visualViewport) {
+          appShell.style.height = window.visualViewport.height + "px";
+        }
+      }
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", syncViewportHeight);
+        window.visualViewport.addEventListener("scroll", syncViewportHeight);
+        syncViewportHeight();
+      }
+
+      /* ============================================================
+         3. TOOLBAR DEFINITIONS & INSERTION (KEEP KEYBOARD OPEN)
+         ============================================================ */
+      const SYMBOL_ITEMS = [
+        { label: "(", insert: "()", cursorOffset: 1 },
+        { label: ")", insert: ")", cursorOffset: 1 },
+        { label: "[", insert: "[]", cursorOffset: 1 },
+        { label: "]", insert: "]", cursorOffset: 1 },
+        { label: ",", insert: ", ", cursorOffset: 2 },
+        { label: ":", insert: ":", cursorOffset: 1 },
+        { label: ";", insert: "; ", cursorOffset: 2 },
+        { label: "!", insert: "!", cursorOffset: 1 },
+        { label: "<", insert: " < ", cursorOffset: 3 },
+        { label: ">", insert: " > ", cursorOffset: 3 },
+        { label: "=", insert: " = ", cursorOffset: 3 },
+        { label: "+", insert: " + ", cursorOffset: 3 },
+        { label: "-", insert: " - ", cursorOffset: 3 },
+        { label: "*", insert: " * ", cursorOffset: 3 },
+        { label: "/", insert: " / ", cursorOffset: 3 },
+        { label: "//", insert: " // ", cursorOffset: 4 },
+        { label: "%", insert: " % ", cursorOffset: 3 },
+        { label: "\"\"", insert: "\"\"", cursorOffset: 1 },
+        { label: "[ ]", insert: "[]", cursorOffset: 1, cls: "struct" },
+        { label: "[[ ], [ ]]", insert: "[[], []]", cursorOffset: 2, cls: "struct" },
+        { label: "( , )", insert: "(, )", cursorOffset: 1, cls: "struct" }
+      ];
+
+      const CONSTRUCT_ITEMS = [
+        { label: "print()", insert: "print()", cursorOffset: 6, cls: "kw" },
+        { label: "input()", insert: "input(\"\")", cursorOffset: 7, cls: "kw" },
+        { label: "int()", insert: "int()", cursorOffset: 4, cls: "kw" },
+        { label: "float()", insert: "float()", cursorOffset: 6, cls: "kw" },
+        { label: "len()", insert: "len()", cursorOffset: 4, cls: "kw" },
+        { label: "sum()", insert: "sum()", cursorOffset: 4, cls: "kw" },
+        { label: "min()", insert: "min()", cursorOffset: 4, cls: "kw" },
+        { label: "max()", insert: "max()", cursorOffset: 4, cls: "kw" },
+        { label: "if :", insert: "if :", cursorOffset: 3, cls: "kw" },
+        { label: "else:", insert: "else:\n    ", cursorOffset: 10, cls: "kw" },
+        { label: "elif :", insert: "elif :", cursorOffset: 5, cls: "kw" },
+        { label: "while :", insert: "while :", cursorOffset: 6, cls: "kw" },
+        { label: "for i in range():", insert: "for i in range():", cursorOffset: 15, cls: "kw" },
+        { label: "def ():", insert: "def ():", cursorOffset: 4, cls: "kw" },
+        { label: ".append()", insert: ".append()", cursorOffset: 8 },
+        { label: ".insert()", insert: ".insert()", cursorOffset: 8 },
+        { label: ".remove()", insert: ".remove()", cursorOffset: 8 },
+        { label: ".pop()", insert: ".pop()", cursorOffset: 5 },
+        { label: ".sort()", insert: ".sort()", cursorOffset: 6 },
+        { label: ".index()", insert: ".index()", cursorOffset: 7 },
+        { label: "in", insert: " in ", cursorOffset: 4, cls: "kw" },
+        { label: "import random", insert: "import random\n", cursorOffset: 14, cls: "mod-import" },
+        { label: "import math", insert: "import math\n", cursorOffset: 12, cls: "mod-import" },
+        { label: "import tkinter as tk", insert: "import tkinter as tk\n", cursorOffset: 21, cls: "mod-import" },
+        { label: "from tkinter import messagebox", insert: "from tkinter import messagebox\n", cursorOffset: 31, cls: "mod-import" }
+      ];
+
+      const RANDOM_ITEMS = [
+        { label: "random.randint()", insert: "random.randint(, )", cursorOffset: 15, cls: "mod-random" },
+        { label: "random.choice()", insert: "random.choice()", cursorOffset: 14, cls: "mod-random" },
+        { label: "random.shuffle()", insert: "random.shuffle()", cursorOffset: 15, cls: "mod-random" },
+        { label: "random.random()", insert: "random.random()", cursorOffset: 15, cls: "mod-random" }
+      ];
+
+      const MATH_ITEMS = [
+        { label: "math.sqrt()", insert: "math.sqrt()", cursorOffset: 10, cls: "mod-math" },
+        { label: "math.ceil()", insert: "math.ceil()", cursorOffset: 10, cls: "mod-math" },
+        { label: "math.floor()", insert: "math.floor()", cursorOffset: 11, cls: "mod-math" },
+        { label: "math.pi", insert: "math.pi", cursorOffset: 7, cls: "mod-math" },
+        { label: "math.pow()", insert: "math.pow(, )", cursorOffset: 9, cls: "mod-math" }
+      ];
+
+      const TKINTER_ITEMS = [
+        { label: "Tk()", insert: "Tk()", cursorOffset: 4, cls: "mod-tk" },
+        { label: ".title()", insert: ".title(\"\")", cursorOffset: 8, cls: "mod-tk" },
+        { label: ".geometry()", insert: ".geometry(\"300x220\")", cursorOffset: 19, cls: "mod-tk" },
+        { label: "Label()", insert: "Label(root, text=\"\")", cursorOffset: 18, cls: "mod-tk" },
+        { label: "Button()", insert: "Button(root, text=\"\", command=)", cursorOffset: 19, cls: "mod-tk" },
+        { label: "Entry()", insert: "Entry(root)", cursorOffset: 11, cls: "mod-tk" },
+        { label: "Canvas()", insert: "Canvas(root, width=280, height=200, bg=\"white\")", cursorOffset: 47, cls: "mod-tk" },
+        { label: ".create_line()", insert: ".create_line(10, 10, 100, 100, fill=\"blue\", width=2)", cursorOffset: 13, cls: "mod-tk" },
+        { label: ".create_rectangle()", insert: ".create_rectangle(20, 20, 120, 80, fill=\"lightblue\", outline=\"navy\")", cursorOffset: 18, cls: "mod-tk" },
+        { label: ".create_oval()", insert: ".create_oval(30, 30, 110, 110, fill=\"gold\", outline=\"orange\")", cursorOffset: 13, cls: "mod-tk" },
+        { label: ".create_text()", insert: ".create_text(140, 30, text=\"Привіт\", fill=\"black\")", cursorOffset: 13, cls: "mod-tk" },
+        { label: ".pack()", insert: ".pack(pady=5)", cursorOffset: 13, cls: "mod-tk" },
+        { label: ".place()", insert: ".place(x=, y=)", cursorOffset: 9, cls: "mod-tk" },
+        { label: ".get()", insert: ".get()", cursorOffset: 6, cls: "mod-tk" },
+        { label: ".config()", insert: ".config(text=\"\")", cursorOffset: 14, cls: "mod-tk" },
+        { label: ".mainloop()", insert: ".mainloop()", cursorOffset: 11, cls: "mod-tk" }
+      ];
+
+      const MESSAGEBOX_ITEMS = [
+        { label: "messagebox.showinfo()", insert: "messagebox.showinfo(\"\", \"\")", cursorOffset: 21, cls: "mod-msg" },
+        { label: "messagebox.showwarning()", insert: "messagebox.showwarning(\"\", \"\")", cursorOffset: 24, cls: "mod-msg" }
+      ];
+
+      function insertAtCursor(text, cursorOffset) {
+        const start = codeEditor.selectionStart ?? codeEditor.value.length;
+        const end = codeEditor.selectionEnd ?? codeEditor.value.length;
+        const before = codeEditor.value.slice(0, start);
+        const after = codeEditor.value.slice(end);
+
+        // Preserve current line indent if inserted text contains newline
+        let finalInsert = text;
+        let finalOffset = cursorOffset;
+        if (text.includes("\n")) {
+          const lineStart = before.lastIndexOf("\n") + 1;
+          const currentIndentMatch = before.slice(lineStart).match(/^[ ]*/);
+          const indent = currentIndentMatch ? currentIndentMatch[0] : "";
+          if (indent.length > 0) {
+            const parts = text.split("\n");
+            finalInsert = parts.join("\n" + indent);
+            const linesBeforeCursor = text.slice(0, cursorOffset).split("\n").length - 1;
+            finalOffset = cursorOffset + linesBeforeCursor * indent.length;
+          }
+        }
+
+        codeEditor.value = before + finalInsert + after;
+        const newPos = start + finalOffset;
+        codeEditor.setSelectionRange(newPos, newPos);
+        codeEditor.focus();
+        onCodeChanged(true);
+      }
+
+      function populateToolbar(container, items, tagLabel, tagClass) {
+        container.innerHTML = "";
+        if (tagLabel) {
+          const tag = document.createElement("span");
+          tag.className = "row-tag " + tagClass;
+          tag.textContent = tagLabel;
+          container.appendChild(tag);
+        }
+        for (const item of items) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "key-btn" + (item.cls ? " " + item.cls : "");
+          btn.textContent = item.label;
+          // Preserve editor focus on mouse and touch without blocking horizontal scroll
+          let moved = false;
+          let startX = 0;
+          let startY = 0;
+          let handledTouch = false;
+          btn.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+          });
+          btn.addEventListener("touchstart", (e) => {
+            moved = false;
+            handledTouch = false;
+            if (e.touches && e.touches[0]) {
+              startX = e.touches[0].clientX;
+              startY = e.touches[0].clientY;
+            }
+          }, { passive: true });
+          btn.addEventListener("touchmove", (e) => {
+            if (e.touches && e.touches[0]) {
+              const dx = Math.abs(e.touches[0].clientX - startX);
+              const dy = Math.abs(e.touches[0].clientY - startY);
+              if (dx > 8 || dy > 8) moved = true;
+            }
+          }, { passive: true });
+          btn.addEventListener("touchend", (e) => {
+            if (!moved) {
+              e.preventDefault();
+              handledTouch = true;
+              insertAtCursor(item.insert, item.cursorOffset);
+            }
+          });
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (handledTouch) {
+              handledTouch = false;
+              return;
+            }
+            if (!moved) {
+              insertAtCursor(item.insert, item.cursorOffset);
+            }
+          });
+          container.appendChild(btn);
+        }
+      }
+
+      populateToolbar(toolbarSymbols, SYMBOL_ITEMS);
+      populateToolbar(toolbarConstructs, CONSTRUCT_ITEMS);
+      populateToolbar(toolbarRandom, RANDOM_ITEMS, "random", "tag-random");
+      populateToolbar(toolbarMath, MATH_ITEMS, "math", "tag-math");
+      populateToolbar(toolbarTkinter, TKINTER_ITEMS, "tkinter", "tag-tk");
+      populateToolbar(toolbarMessagebox, MESSAGEBOX_ITEMS, "msgbox", "tag-msg");
+
+      /* ============================================================
+         4. DYNAMIC MODULE PANEL DETECTION
+         ============================================================ */
+      function detectImportedModules(code) {
+        const lines = code.split(/\r?\n/);
+        let hasRandom = false;
+        let hasMath = false;
+        let hasTkinter = false;
+        let hasMessagebox = false;
+
+        for (const rawLine of lines) {
+          const stripped = rawLine.replace(/#.*$/, "").trim();
+          if (!stripped) continue;
+
+          if (/^import\s+/.test(stripped)) {
+            const mods = stripped.slice(7).split(",").map(s => s.trim().split(/\s+as\s+/)[0].trim());
+            for (const m of mods) {
+              if (m === "random") hasRandom = true;
+              if (m === "math") hasMath = true;
+              if (m === "tkinter") hasTkinter = true;
+              if (m === "tkinter.messagebox") {
+                hasTkinter = true;
+                hasMessagebox = true;
+              }
+            }
+          } else if (/^from\s+/.test(stripped)) {
+            const mMatch = stripped.match(/^from\s+([a-zA-Z0-9_.]+)\s+import\s+(.+)$/);
+            if (mMatch) {
+              const pkg = mMatch[1];
+              const names = mMatch[2];
+              if (pkg === "random") hasRandom = true;
+              if (pkg === "math") hasMath = true;
+              if (pkg === "tkinter") {
+                hasTkinter = true;
+                if (/\bmessagebox\b/.test(names) || names.trim() === "*") {
+                  hasMessagebox = true;
+                }
+              }
+              if (pkg === "tkinter.messagebox") {
+                hasMessagebox = true;
+              }
+            }
+          }
+        }
+        return { hasRandom, hasMath, hasTkinter, hasMessagebox };
+      }
+
+      function updateDynamicToolbars() {
+        const { hasRandom, hasMath, hasTkinter, hasMessagebox } = detectImportedModules(codeEditor.value);
+        toolbarRandom.classList.toggle("hidden", !hasRandom);
+        toolbarMath.classList.toggle("hidden", !hasMath);
+        toolbarTkinter.classList.toggle("hidden", !hasTkinter);
+        toolbarMessagebox.classList.toggle("hidden", !hasMessagebox);
+      }
+
+      /* ============================================================
+         5. EDITOR UX: LINE NUMBERS, AUTO-INDENT, LOCALSTORAGE
+         ============================================================ */
+      function updateLineNumbers() {
+        const lines = codeEditor.value.split("\n").length;
+        let html = "";
+        for (let i = 1; i <= lines; i++) {
+          if (currentErrorLine === i) {
+            html += `<div class="ln-err">${i}</div>`;
+          } else {
+            html += `<div>${i}</div>`;
+          }
+        }
+        lineNumbers.innerHTML = html;
+        lineNumbers.scrollTop = codeEditor.scrollTop;
+      }
+
+      codeEditor.addEventListener("scroll", () => {
+        lineNumbers.scrollTop = codeEditor.scrollTop;
+      });
+
+      function onCodeChanged(recordHistory) {
+        currentErrorLine = null;
+        updateLineNumbers();
+        updateDynamicToolbars();
+        try {
+          localStorage.setItem(STORAGE_CODE_KEY, codeEditor.value);
+        } catch (_) {}
+        if (recordHistory) {
+          pushHistory(codeEditor.value, codeEditor.selectionStart, codeEditor.selectionEnd);
+        }
+      }
+
+      codeEditor.addEventListener("input", () => onCodeChanged(true));
+
+      codeEditor.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+          e.preventDefault();
+          if (e.shiftKey) applyRedo();
+          else applyUndo();
+          return;
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+          e.preventDefault();
+          applyRedo();
+          return;
+        }
+        if (e.key === "Tab") {
+          e.preventDefault();
+          insertAtCursor("    ", 4);
+          return;
+        }
+        if (e.key === "Enter") {
+          const start = codeEditor.selectionStart;
+          const end = codeEditor.selectionEnd;
+          if (start === end) {
+            const before = codeEditor.value.slice(0, start);
+            const lineStart = before.lastIndexOf("\n") + 1;
+            const currentLine = before.slice(lineStart);
+            const indentMatch = currentLine.match(/^[ ]*/);
+            let indent = indentMatch ? indentMatch[0] : "";
+            const codeWithoutComment = currentLine.replace(/#.*$/, "").trimEnd();
+            if (codeWithoutComment.endsWith(":")) {
+              indent += "    ";
+            }
+            if (indent.length > 0) {
+              e.preventDefault();
+              insertAtCursor("\n" + indent, 1 + indent.length);
+            }
+          }
+        }
+      });
+
+      /* ============================================================
+         6. SCREEN MODE, THEME & MENU ACTIONS
+         ============================================================ */
+      function setViewMode(mode) {
+        workspace.classList.remove("mode-split", "mode-code", "mode-result");
+        workspace.classList.add("mode-" + mode);
+
+        editorPane.classList.toggle("hidden", mode === "result");
+        resultPane.classList.toggle("hidden", mode === "code");
+
+        modeBtns.forEach((b) => {
+          const active = b.dataset.mode === mode;
+          b.classList.toggle("active", active);
+          b.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        try {
+          localStorage.setItem(STORAGE_MODE_KEY, mode);
+        } catch (_) {}
+      }
+
+      modeBtns.forEach((btn) => {
+        btn.addEventListener("click", () => setViewMode(btn.dataset.mode));
+      });
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        themeBtnLabel.textContent = theme === "dark" ? "Тема: Темна" : "Тема: Світла";
+        try {
+          localStorage.setItem(STORAGE_THEME_KEY, theme);
+        } catch (_) {}
+      }
+
+      menuBtn.addEventListener("click", () => {
+        menuBackdrop.classList.add("active");
+      });
+
+      menuBackdrop.addEventListener("click", (e) => {
+        if (e.target === menuBackdrop) {
+          menuBackdrop.classList.remove("active");
+        }
+      });
+
+      undoBtn.addEventListener("click", () => {
+        menuBackdrop.classList.remove("active");
+        applyUndo();
+      });
+
+      redoBtn.addEventListener("click", () => {
+        menuBackdrop.classList.remove("active");
+        applyRedo();
+      });
+
+      themeBtn.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme");
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+
+      copyBtn.addEventListener("click", async () => {
+        menuBackdrop.classList.remove("active");
+        const code = codeEditor.value;
+        if (window.AndroidBridge && typeof window.AndroidBridge.copyToClipboard === "function") {
+          window.AndroidBridge.copyToClipboard(code);
+          showToast("Код скопійовано");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(code);
+          showToast("Код скопійовано");
+        } catch (_) {
+          codeEditor.select();
+          document.execCommand("copy");
+          showToast("Код скопійовано");
+        }
+      });
+
+      downloadBtn.addEventListener("click", () => {
+        menuBackdrop.classList.remove("active");
+        const code = codeEditor.value;
+        if (window.AndroidBridge && typeof window.AndroidBridge.downloadPy === "function") {
+          window.AndroidBridge.downloadPy("main.py", code);
+          return;
+        }
+        const blob = new Blob([code], { type: "text/x-python;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "main.py";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast("Файл main.py завантажено");
+      });
+
+      clearCodeBtn.addEventListener("click", () => {
+        menuBackdrop.classList.remove("active");
+        confirmModal.classList.add("active");
+      });
+
+      confirmCancelBtn.addEventListener("click", () => {
+        confirmModal.classList.remove("active");
+      });
+
+      confirmOkBtn.addEventListener("click", () => {
+        confirmModal.classList.remove("active");
+        codeEditor.value = "";
+        onCodeChanged(true);
+        codeEditor.focus();
+        showToast("Код очищено");
+      });
+
+      confirmModal.addEventListener("click", (e) => {
+        if (e.target === confirmModal) confirmModal.classList.remove("active");
+      });
+
+      clearOutBtn.addEventListener("click", () => {
+        resetOutputUI();
+        setStatus("Готово", "");
+      });
+
+      /* ============================================================
+         7. PYTHON ERROR CLASS (UKRAINIAN DIAGNOSTICS)
+         ============================================================ */
+      class PyError extends Error {
+        constructor(title, what, line, tip) {
+          super(what);
+          this.title = title;
+          this.what = what;
+          this.line = line || 1;
+          this.tip = tip || "Перевір уважно цей рядок програми.";
+        }
+      }
+
+      /* ============================================================
+         8. PYTHON LEXER
+         ============================================================ */
+      const KEYWORDS = new Set([
+        "if", "elif", "else", "while", "for", "in", "not", "and", "or",
+        "def", "return", "import", "from", "as", "True", "False", "None",
+        "break", "continue", "pass", "global"
+      ]);
+
+      function tokenize(source) {
+        const lines = source.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+        const tokens = [];
+        const indentStack = [0];
+        let parenDepth = 0;
+        const openBracketStack = [];
+
+        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+          const lineNum = lineIdx + 1;
+          const line = lines[lineIdx];
+
+          // Count leading spaces / tabs
+          let pos = 0;
+          let spaces = 0;
+          while (pos < line.length && (line[pos] === " " || line[pos] === "\t")) {
+            if (line[pos] === "\t") spaces += 4;
+            else spaces += 1;
+            pos++;
+          }
+
+          // Skip blank or comment-only lines
+          if (pos >= line.length || line[pos] === "#") {
+            continue;
+          }
+
+          if (parenDepth === 0) {
+            const topIndent = indentStack[indentStack.length - 1];
+            if (spaces > topIndent) {
+              indentStack.push(spaces);
+              tokens.push({ type: "INDENT", value: spaces, line: lineNum });
+            } else if (spaces < topIndent) {
+              while (indentStack.length > 1 && spaces < indentStack[indentStack.length - 1]) {
+                indentStack.pop();
+                tokens.push({ type: "DEDENT", value: spaces, line: lineNum });
+              }
+              if (indentStack[indentStack.length - 1] !== spaces) {
+                throw new PyError(
+                  "Помилка відступу (IndentationError)",
+                  "Неправильна кількість пробілів на початку рядка. Відступ не збігається з попередніми блоками.",
+                  lineNum,
+                  "Вирівняй відступи так, щоб команди одного рівня мали однакову кількість пробілів (зазвичай кратно 4)."
+                );
+              }
+            }
+          }
+
+          while (pos < line.length) {
+            const ch = line[pos];
+            if (ch === " " || ch === "\t") {
+              pos++;
+              continue;
+            }
+            if (ch === "#") {
+              break;
+            }
+
+            // String or f-string
+            if ((ch === "f" || ch === "F") && (line[pos + 1] === "\"" || line[pos + 1] === "'")) {
+              const quote = line[pos + 1];
+              const strRes = readString(line, pos + 2, quote, lineNum);
+              tokens.push({ type: "FSTRING", value: strRes.value, line: lineNum });
+              pos = strRes.nextPos;
+              continue;
+            }
+            if (ch === "\"" || ch === "'") {
+              const strRes = readString(line, pos + 1, ch, lineNum);
+              tokens.push({ type: "STRING", value: strRes.value, line: lineNum });
+              pos = strRes.nextPos;
+              continue;
+            }
+
+            // Numbers
+            if (/[0-9]/.test(ch) || (ch === "." && pos + 1 < line.length && /[0-9]/.test(line[pos + 1]))) {
+              const numMatch = line.slice(pos).match(/^(?:\d+\.\d*|\.\d+|\d+)/);
+              const rawNum = numMatch[0];
+              tokens.push({
+                type: "NUMBER",
+                value: rawNum.includes(".") ? parseFloat(rawNum) : parseInt(rawNum, 10),
+                isFloat: rawNum.includes("."),
+                line: lineNum
+              });
+              pos += rawNum.length;
+              continue;
+            }
+
+            // Identifiers & Keywords
+            if (/[A-Za-z_]/.test(ch)) {
+              const idMatch = line.slice(pos).match(/^[A-Za-z_][A-Za-z0-9_]*/);
+              const word = idMatch[0];
+              if (KEYWORDS.has(word)) {
+                tokens.push({ type: "KW", value: word, line: lineNum });
+              } else {
+                tokens.push({ type: "IDENT", value: word, line: lineNum });
+              }
+              pos += word.length;
+              continue;
+            }
+
+            // Multi-char operators
+            const two = line.slice(pos, pos + 2);
+            const twoOps = ["**", "//", "==", "!=", "<=", ">=", "+=", "-=", "*=", "/=", "%="];
+            const three = line.slice(pos, pos + 3);
+            if (three === "//=") {
+              tokens.push({ type: "OP", value: "//=", line: lineNum });
+              pos += 3;
+              continue;
+            }
+            if (twoOps.includes(two)) {
+              tokens.push({ type: "OP", value: two, line: lineNum });
+              pos += 2;
+              continue;
+            }
+
+            // Brackets
+            if (ch === "(" || ch === "[") {
+              parenDepth++;
+              openBracketStack.push({ ch, line: lineNum });
+              tokens.push({ type: "OP", value: ch, line: lineNum });
+              pos++;
+              continue;
+            }
+            if (ch === ")" || ch === "]") {
+              if (openBracketStack.length === 0) {
+                throw new PyError(
+                  "Зайва закриваюча дужка (SyntaxError)",
+                  `Зустрілася зайва дужка «${ch}», для якої немає відкриваючої пари.`,
+                  lineNum,
+                  `Видали зайву «${ch}» або додай відповідну відкриваючу дужку перед виразом.`
+                );
+              }
+              const lastOpen = openBracketStack.pop();
+              const expectedClose = lastOpen.ch === "(" ? ")" : "]";
+              if (ch !== expectedClose) {
+                throw new PyError(
+                  "Невідповідність дужок (SyntaxError)",
+                  `Відкрито «${lastOpen.ch}» (рядок ${lastOpen.line}), а закрито «${ch}».`,
+                  lineNum,
+                  `Заміни «${ch}» на «${expectedClose}».`
+                );
+              }
+              parenDepth--;
+              tokens.push({ type: "OP", value: ch, line: lineNum });
+              pos++;
+              continue;
+            }
+
+            // Single-char punctuation / operators
+            if ("+-*/%<>=,:.;".includes(ch)) {
+              tokens.push({ type: "OP", value: ch, line: lineNum });
+              pos++;
+              continue;
+            }
+
+            throw new PyError(
+              "Невідомий символ (SyntaxError)",
+              `У коді використано непідтримуваний або несподіваний символ «${ch}».`,
+              lineNum,
+              "Перевір, чи не залишився випадковий символ або українська літера замість англійської в імені змінної/операторі."
+            );
+          }
+
+          if (parenDepth === 0) {
+            tokens.push({ type: "NEWLINE", value: "\n", line: lineNum });
+          }
+        }
+
+        if (openBracketStack.length > 0) {
+          const unclosed = openBracketStack[openBracketStack.length - 1];
+          const pair = unclosed.ch === "(" ? ")" : "]";
+          throw new PyError(
+            "Незакрита дужка (SyntaxError)",
+            `Дужку «${unclosed.ch}» у рядку ${unclosed.line} було відкрито, але не закрито.`,
+            unclosed.line,
+            `Додай закриваючу дужку «${pair}» у кінці виразу.`
+          );
+        }
+
+        while (indentStack.length > 1) {
+          indentStack.pop();
+          tokens.push({ type: "DEDENT", value: 0, line: lines.length });
+        }
+        tokens.push({ type: "EOF", value: "", line: lines.length });
+        return tokens;
+      }
+
+      function readString(line, startPos, quote, lineNum) {
+        let out = "";
+        let i = startPos;
+        while (i < line.length) {
+          const c = line[i];
+          if (c === "\\") {
+            if (i + 1 >= line.length) break;
+            const next = line[i + 1];
+            if (next === "n") out += "\n";
+            else if (next === "t") out += "\t";
+            else if (next === "\\") out += "\\";
+            else if (next === "'") out += "'";
+            else if (next === "\"") out += "\"";
+            else out += next;
+            i += 2;
+            continue;
+          }
+          if (c === quote) {
+            return { value: out, nextPos: i + 1 };
+          }
+          out += c;
+          i++;
+        }
+        throw new PyError(
+          "Незакриті лапки (SyntaxError)",
+          `Рядок тексту розпочався з лапки ${quote}, але не був закритий до кінця рядка.`,
+          lineNum,
+          `Постав закриваючу лапку ${quote} у кінці текстового значення.`
+        );
+      }
+
+      /* ============================================================
+         9. PYTHON PARSER (AST)
+         ============================================================ */
+      function parse(tokens) {
+        let idx = 0;
+
+        function peek(offset = 0) {
+          return tokens[Math.min(idx + offset, tokens.length - 1)];
+        }
+        function next() {
+          return tokens[idx++];
+        }
+        function match(type, value) {
+          const t = peek();
+          if (t.type === type && (value === undefined || t.value === value)) {
+            idx++;
+            return t;
+          }
+          return null;
+        }
+        function isAt(type, value) {
+          const t = peek();
+          return t.type === type && (value === undefined || t.value === value);
+        }
+        function expect(type, value, errTitle, errWhat, errTip) {
+          const t = peek();
+          if (t.type === type && (value === undefined || t.value === value)) {
+            idx++;
+            return t;
+          }
+          throw new PyError(errTitle, errWhat, t.line, errTip);
+        }
+
+        function skipNewlines() {
+          while (match("NEWLINE")) {}
+        }
+
+        function parseProgram() {
+          const body = [];
+          skipNewlines();
+          while (!isAt("EOF")) {
+            const stmts = parseStatementLine();
+            body.push(...stmts);
+            skipNewlines();
+          }
+          return { type: "Program", body };
+        }
+
+        function parseStatementLine() {
+          const first = parseStatement();
+          if (first.isCompound) {
+            return [first];
+          }
+          const list = [first];
+          while (match("OP", ";")) {
+            if (isAt("NEWLINE") || isAt("EOF") || isAt("DEDENT")) break;
+            list.push(parseStatement());
+          }
+          if (!isAt("EOF") && !isAt("DEDENT")) {
+            const t = peek();
+            if (t.type !== "NEWLINE") {
+              if (t.type === "OP" && t.value === "=") {
+                throw new PyError(
+                  "Помилка присвоєння (SyntaxError)",
+                  "Некоректне використання знака «=» у рядку.",
+                  t.line,
+                  "Для перевірки рівності використовуй «==», а не «=». Зліва від «=» має бути ім'я змінної або елемент списку."
+                );
+              }
+              throw new PyError(
+                "Синтаксична помилка (SyntaxError)",
+                `Неочікуваний елемент «${t.value}» у кінці рядка.`,
+                t.line,
+                "Перевір, чи не пропущено кому, дужку або знак оператора."
+              );
+            }
+            next(); // consume NEWLINE
+          }
+          return list;
+        }
+
+        function parseBlock(headerLine, headerWord) {
+          expect(
+            "OP", ":",
+            "Пропущено двокрапку (SyntaxError)",
+            `Після конструкції «${headerWord}» обов'язково має стояти двокрапка «:».`,
+            `Додай «:» в кінці рядка ${headerLine}.`
+          );
+          if (!match("NEWLINE")) {
+            // Single-line suite after ':'
+            if (!isAt("EOF") && !isAt("DEDENT")) {
+              const inlineStmt = parseStatement();
+              if (!isAt("EOF") && !isAt("DEDENT")) match("NEWLINE");
+              return [inlineStmt];
+            }
+          }
+          skipNewlines();
+          if (!match("INDENT")) {
+            throw new PyError(
+              "Очікується відступ (IndentationError)",
+              `Після двокрапки «:» у конструкції «${headerWord}» наступний рядок має починатися з відступу.`,
+              headerLine + 1,
+              "Додай 4 пробіли на початку наступного рядка."
+            );
+          }
+          const stmts = [];
+          while (!isAt("DEDENT") && !isAt("EOF")) {
+            skipNewlines();
+            if (isAt("DEDENT") || isAt("EOF")) break;
+            stmts.push(...parseStatementLine());
+          }
+          match("DEDENT");
+          return stmts;
+        }
+
+        function parseStatement() {
+          const t = peek();
+
+          if (match("KW", "pass")) return { type: "Pass", line: t.line };
+          if (match("KW", "break")) return { type: "Break", line: t.line };
+          if (match("KW", "continue")) return { type: "Continue", line: t.line };
+
+          if (match("KW", "global")) {
+            const names = [];
+            const id = expect("IDENT", undefined, "Помилка global", "Після global вкажи ім'я змінної.", "Наприклад: global score");
+            names.push(id.value);
+            while (match("OP", ",")) {
+              const nextId = expect("IDENT", undefined, "Помилка global", "Очікувалось ім'я змінної після коми.", "Перевір перелік змінних після global.");
+              names.push(nextId.value);
+            }
+            return { type: "Global", names, line: t.line };
+          }
+
+          if (match("KW", "return")) {
+            if (isAt("NEWLINE") || isAt("EOF") || isAt("DEDENT") || isAt("OP", ";")) {
+              return { type: "Return", value: null, line: t.line };
+            }
+            const expr = parseTupleOrExpr();
+            return { type: "Return", value: expr, line: t.line };
+          }
+
+          if (match("KW", "import")) {
+            const items = [];
+            do {
+              let modName = expect("IDENT", undefined, "Помилка import", "Після import очікується назва модуля.", "Наприклад: import random").value;
+              while (match("OP", ".")) {
+                const sub = expect("IDENT", undefined, "Помилка import", "Очікувалась назва підмодуля після крапки.", "Наприклад: import tkinter.messagebox").value;
+                modName += "." + sub;
+              }
+              let alias = null;
+              if (match("KW", "as")) {
+                alias = expect("IDENT", undefined, "Помилка import as", "Після as вкажи коротке ім'я модуля.", "Наприклад: import tkinter as tk").value;
+              }
+              items.push({ module: modName, alias });
+            } while (match("OP", ","));
+            return { type: "Import", items, line: t.line };
+          }
+
+          if (match("KW", "from")) {
+            let pkg = expect("IDENT", undefined, "Помилка from ... import", "Після from вкажи назву модуля.", "Наприклад: from tkinter import messagebox").value;
+            while (match("OP", ".")) {
+              const sub = expect("IDENT", undefined, "Помилка from ... import", "Очікувалась назва підмодуля після крапки.", "Наприклад: from tkinter import messagebox").value;
+              pkg += "." + sub;
+            }
+            expect("KW", "import", "Помилка from ... import", "Після назви модуля очікується слово import.", "Приклад: from random import randint");
+            if (match("OP", "*")) {
+              return { type: "FromImport", module: pkg, names: "*", line: t.line };
+            }
+            const names = [];
+            do {
+              const name = expect("IDENT", undefined, "Помилка import", "Вкажи, що саме імпортувати з модуля.", "Приклад: from tkinter import messagebox").value;
+              let alias = name;
+              if (match("KW", "as")) {
+                alias = expect("IDENT", undefined, "Помилка as", "Після as вкажи нове ім'я.", "Перевір синтаксис імпорту.").value;
+              }
+              names.push({ name, alias });
+            } while (match("OP", ","));
+            return { type: "FromImport", module: pkg, names, line: t.line };
+          }
+
+          if (match("KW", "if")) {
+            const cond = parseConditionOrExpr(t.line, "if");
+            const thenBody = parseBlock(t.line, "if");
+            const elifs = [];
+            skipNewlines();
+            while (isAt("KW", "elif")) {
+              const elifTok = next();
+              const eCond = parseConditionOrExpr(elifTok.line, "elif");
+              const eBody = parseBlock(elifTok.line, "elif");
+              elifs.push({ test: eCond, body: eBody });
+              skipNewlines();
+            }
+            let elseBody = null;
+            if (isAt("KW", "else")) {
+              const elseTok = next();
+              elseBody = parseBlock(elseTok.line, "else");
+            }
+            return { type: "If", test: cond, body: thenBody, elifs, elseBody, line: t.line, isCompound: true };
+          }
+
+          if (match("KW", "while")) {
+            const cond = parseConditionOrExpr(t.line, "while");
+            const body = parseBlock(t.line, "while");
+            return { type: "While", test: cond, body, line: t.line, isCompound: true };
+          }
+
+          if (match("KW", "for")) {
+            const targets = [];
+            do {
+              const id = expect("IDENT", undefined, "Помилка циклу for", "Після for має бути ім'я змінної лічильника.", "Приклад: for i in range(5):");
+              targets.push({ type: "Ident", name: id.value, line: id.line });
+            } while (match("OP", ","));
+            const target = targets.length === 1 ? targets[0] : { type: "TupleLiteral", items: targets, line: t.line };
+            expect("KW", "in", "Помилка циклу for", "У циклі for після змінної має стояти ключове слово «in».", "Приклад: for i in range(10):");
+            const iter = parseTupleOrExpr();
+            const body = parseBlock(t.line, "for");
+            return { type: "For", target, iter, body, line: t.line, isCompound: true };
+          }
+
+          if (match("KW", "def")) {
+            const nameTok = expect("IDENT", undefined, "Помилка оголошення функції", "Після def вкажи назву функції.", "Приклад: def greet(name):");
+            expect("OP", "(", "Помилка def", "Після назви функції мають бути круглі дужки ().", `Напиши: def ${nameTok.value}():`);
+            const params = [];
+            if (!isAt("OP", ")")) {
+              do {
+                const pTok = expect("IDENT", undefined, "Помилка параметра функції", "Очікувалась назва параметра функції.", "Перевір параметри у дужках після def.");
+                let defVal = null;
+                if (match("OP", "=")) {
+                  defVal = parseExpr();
+                }
+                params.push({ name: pTok.value, default: defVal });
+              } while (match("OP", ","));
+            }
+            expect("OP", ")", "Незакрита дужка у def", "У списку параметрів функції пропущено закриваючу дужку «)».", "Закрий дужки перед двокрапкою «:».");
+            const body = parseBlock(t.line, "def");
+            return { type: "Def", name: nameTok.value, params, body, line: t.line, isCompound: true };
+          }
+
+          // Expression or Assignment
+          const left = parseTupleOrExpr();
+          if (match("OP", "=")) {
+            const right = parseTupleOrExpr();
+            return { type: "Assign", target: left, value: right, line: t.line };
+          }
+          const augOps = ["+=", "-=", "*=", "/=", "//=", "%="];
+          for (const op of augOps) {
+            if (match("OP", op)) {
+              const right = parseTupleOrExpr();
+              return { type: "AugAssign", target: left, op: op.slice(0, -1), value: right, line: t.line };
+            }
+          }
+          return { type: "ExprStmt", expr: left, line: t.line };
+        }
+
+        function parseConditionOrExpr(lineNum, kw) {
+          const expr = parseExpr();
+          if (isAt("OP", "=")) {
+            throw new PyError(
+              "Плутанина між «=» та «==» (SyntaxError)",
+              `В умові «${kw}» використано одинарне «=» замість подвійного «==».`,
+              lineNum,
+              "Знак «=» записує значення у змінну, а для порівняння на рівність потрібно писати «==»."
+            );
+          }
+          return expr;
+        }
+
+        function parseTupleOrExpr() {
+          const first = parseExpr();
+          if (match("OP", ",")) {
+            const items = [first];
+            if (!isAt("NEWLINE") && !isAt("EOF") && !isAt("DEDENT") && !isAt("OP", ":") && !isAt("OP", "=") && !isAt("OP", ";")) {
+              items.push(parseExpr());
+              while (match("OP", ",")) {
+                if (isAt("NEWLINE") || isAt("EOF") || isAt("DEDENT") || isAt("OP", ":") || isAt("OP", "=")) break;
+                items.push(parseExpr());
+              }
+            }
+            return { type: "TupleLiteral", items, line: first.line };
+          }
+          return first;
+        }
+
+        function parseExpr() {
+          return parseOr();
+        }
+
+        function parseOr() {
+          let left = parseAnd();
+          while (match("KW", "or")) {
+            const right = parseAnd();
+            left = { type: "Logical", op: "or", left, right, line: left.line };
+          }
+          return left;
+        }
+
+        function parseAnd() {
+          let left = parseNot();
+          while (match("KW", "and")) {
+            const right = parseNot();
+            left = { type: "Logical", op: "and", left, right, line: left.line };
+          }
+          return left;
+        }
+
+        function parseNot() {
+          if (isAt("KW", "not") && !(peek(1).type === "KW" && peek(1).value === "in")) {
+            const t = next();
+            return { type: "Unary", op: "not", arg: parseNot(), line: t.line };
+          }
+          return parseComparison();
+        }
+
+        function parseComparison() {
+          let left = parseAddSub();
+          const ops = [];
+          const rights = [];
+          while (true) {
+            if (isAt("OP", "==") || isAt("OP", "!=") || isAt("OP", "<") || isAt("OP", ">") || isAt("OP", "<=") || isAt("OP", ">=")) {
+              ops.push(next().value);
+              rights.push(parseAddSub());
+            } else if (match("KW", "in")) {
+              ops.push("in");
+              rights.push(parseAddSub());
+            } else if (isAt("KW", "not") && peek(1).type === "KW" && peek(1).value === "in") {
+              next();
+              next();
+              ops.push("not in");
+              rights.push(parseAddSub());
+            } else {
+              break;
+            }
+          }
+          if (ops.length === 0) return left;
+          return { type: "Compare", left, ops, rights, line: left.line };
+        }
+
+        function parseAddSub() {
+          let left = parseMulDiv();
+          while (isAt("OP", "+") || isAt("OP", "-")) {
+            const op = next().value;
+            const right = parseMulDiv();
+            left = { type: "Binary", op, left, right, line: left.line };
+          }
+          return left;
+        }
+
+        function parseMulDiv() {
+          let left = parseUnary();
+          while (isAt("OP", "*") || isAt("OP", "/") || isAt("OP", "//") || isAt("OP", "%")) {
+            const op = next().value;
+            const right = parseUnary();
+            left = { type: "Binary", op, left, right, line: left.line };
+          }
+          return left;
+        }
+
+        function parseUnary() {
+          if (isAt("OP", "-") || isAt("OP", "+")) {
+            const t = next();
+            return { type: "Unary", op: t.value, arg: parseUnary(), line: t.line };
+          }
+          return parsePower();
+        }
+
+        function parsePower() {
+          let base = parsePostfix();
+          if (match("OP", "**")) {
+            const exp = parseUnary();
+            return { type: "Binary", op: "**", left: base, right: exp, line: base.line };
+          }
+          return base;
+        }
+
+        function parsePostfix() {
+          let expr = parsePrimary();
+          while (true) {
+            if (match("OP", ".")) {
+              const prop = expect("IDENT", undefined, "Помилка звернення через крапку", "Після крапки «.» має бути назва методу або властивості.", "Наприклад: a.append(5) або math.sqrt(9)");
+              expr = { type: "Attr", obj: expr, name: prop.value, line: prop.line };
+            } else if (match("OP", "(")) {
+              const args = [];
+              const kwargs = {};
+              let hasKw = false;
+              if (!isAt("OP", ")")) {
+                do {
+                  if (isAt("OP", ")")) break;
+                  if (isAt("IDENT") && peek(1).type === "OP" && peek(1).value === "=") {
+                    const kTok = next();
+                    next(); // '='
+                    kwargs[kTok.value] = parseExpr();
+                    hasKw = true;
+                  } else {
+                    if (hasKw) {
+                      throw new PyError(
+                        "Помилка аргументів функції (SyntaxError)",
+                        "Звичайні аргументи не можуть іти після іменованих (виду text=...).",
+                        peek().line,
+                        "Спочатку вкажи позиційні аргументи, а потім іменовані (наприклад, bg=\"white\")."
+                      );
+                    }
+                    args.push(parseExpr());
+                  }
+                } while (match("OP", ","));
+              }
+              expect("OP", ")", "Незакрита дужка виклику", "У виклику функції пропущено закриваючу дужку «)».", "Закрий дужку після аргументів функції.");
+              expr = { type: "Call", callee: expr, args, kwargs, line: expr.line };
+            } else if (match("OP", "[")) {
+              const lineNum = peek().line;
+              let start = null;
+              let stop = null;
+              let step = null;
+              let isSlice = false;
+
+              if (match("OP", ":")) {
+                isSlice = true;
+              } else {
+                start = parseExpr();
+                if (match("OP", ":")) isSlice = true;
+              }
+
+              if (isSlice) {
+                if (!isAt("OP", ":") && !isAt("OP", "]")) {
+                  stop = parseExpr();
+                }
+                if (match("OP", ":")) {
+                  if (!isAt("OP", "]")) {
+                    step = parseExpr();
+                  }
+                }
+                expect("OP", "]", "Незакрита квадратна дужка", "У зрізі списку/рядка пропущено «]».", "Закрий квадратну дужку після зрізу.");
+                expr = { type: "Slice", obj: expr, start, stop, step, line: lineNum };
+              } else {
+                expect("OP", "]", "Незакрита квадратна дужка", "При зверненні до елемента за індексом пропущено «]».", "Закрий квадратну дужку після індексу.");
+                expr = { type: "Index", obj: expr, index: start, line: lineNum };
+              }
+            } else {
+              break;
+            }
+          }
+          return expr;
+        }
+
+        function parsePrimary() {
+          const t = peek();
+          if (match("NUMBER")) return { type: "Literal", value: t.value, line: t.line };
+          if (match("STRING")) return { type: "Literal", value: t.value, line: t.line };
+          if (match("FSTRING")) return { type: "FString", value: t.value, line: t.line };
+          if (match("KW", "True")) return { type: "Literal", value: true, line: t.line };
+          if (match("KW", "False")) return { type: "Literal", value: false, line: t.line };
+          if (match("KW", "None")) return { type: "Literal", value: null, line: t.line };
+          if (match("IDENT")) return { type: "Ident", name: t.value, line: t.line };
+
+          if (match("OP", "(")) {
+            if (match("OP", ")")) {
+              return { type: "TupleLiteral", items: [], line: t.line };
+            }
+            const first = parseExpr();
+            if (match("OP", ",")) {
+              const items = [first];
+              while (!isAt("OP", ")") && !isAt("EOF")) {
+                items.push(parseExpr());
+                if (!match("OP", ",")) break;
+              }
+              expect("OP", ")", "Незакрита дужка", "Пропущено закриваючу круглу дужку «)» у кортежі.", "Додай «)» після елементів кортежу.");
+              return { type: "TupleLiteral", items, line: t.line };
+            }
+            expect("OP", ")", "Незакрита дужка", "Пропущено закриваючу круглу дужку «)».", "Перевір парність круглих дужок у виразі.");
+            return first;
+          }
+
+          if (match("OP", "[")) {
+            if (match("OP", "]")) {
+              return { type: "ListLiteral", items: [], line: t.line };
+            }
+            const first = parseExpr();
+            // Support list comprehension: [expr for var in iter (if cond)]
+            if (match("KW", "for")) {
+              const varTok = expect("IDENT", undefined, "Помилка генератора списку", "Після for вкажи ім'я змінної.", "Приклад: [x * 2 for x in a]");
+              expect("KW", "in", "Помилка генератора списку", "Очікувалось ключове слово in.", "Приклад: [x * 2 for x in a]");
+              const iterExpr = parseExpr();
+              let condExpr = null;
+              if (match("KW", "if")) {
+                condExpr = parseExpr();
+              }
+              expect("OP", "]", "Незакрита квадратна дужка", "Пропущено закриваючу «]» у списку.", "Додай «]» в кінці генератора списку.");
+              return { type: "ListComp", elt: first, varName: varTok.value, iter: iterExpr, cond: condExpr, line: t.line };
+            }
+            const items = [first];
+            while (match("OP", ",")) {
+              if (isAt("OP", "]")) break;
+              items.push(parseExpr());
+            }
+            expect("OP", "]", "Незакрита квадратна дужка", "Пропущено закриваючу квадратну дужку «]» у списку.", "Додай «]» у кінці списку.");
+            return { type: "ListLiteral", items, line: t.line };
+          }
+
+          throw new PyError(
+            "Синтаксична помилка (SyntaxError)",
+            `Неочікуваний фрагмент «${t.value || "кінець рядка"}» у виразі.`,
+            t.line,
+            "Перевір правильність запису виразу — можливо, зайва кома або пропущено значення."
+          );
+        }
+
+        return parseProgram();
+      }
+
+      /* ============================================================
+         10. PYTHON RUNTIME HELPERS & TYPES
+         ============================================================ */
+      const BREAK_SIG = { __sig: "break" };
+      const CONT_SIG = { __sig: "continue" };
+
+      function makeTuple(items) {
+        return { __pyType: "tuple", items };
+      }
+      function isTuple(v) {
+        return v !== null && typeof v === "object" && v.__pyType === "tuple";
+      }
+      function isList(v) {
+        return Array.isArray(v);
+      }
+      function isNone(v) {
+        return v === null || v === undefined;
+      }
+      function isPyBool(v) {
+        return typeof v === "boolean";
+      }
+      function isPyNumber(v) {
+        return typeof v === "number" || typeof v === "boolean";
+      }
+      function toNum(v) {
+        return typeof v === "boolean" ? (v ? 1 : 0) : v;
+      }
+      function isTruthy(v) {
+        if (v === null || v === undefined || v === false) return false;
+        if (v === true) return true;
+        if (typeof v === "number") return v !== 0;
+        if (typeof v === "string") return v.length > 0;
+        if (Array.isArray(v)) return v.length > 0;
+        if (isTuple(v)) return v.items.length > 0;
+        return true;
+      }
+      function pyTypeName(v) {
+        if (v === null || v === undefined) return "NoneType";
+        if (typeof v === "boolean") return "bool";
+        if (typeof v === "number") return Number.isInteger(v) ? "int" : "float";
+        if (typeof v === "string") return "str";
+        if (Array.isArray(v)) return "list";
+        if (isTuple(v)) return "tuple";
+        if (v.__pyType === "range") return "range";
+        if (v.__pyType === "function") return "function";
+        if (v.__pyType === "module") return "module";
+        if (v.__pyType === "tk_widget") return v.kind;
+        return "object";
+      }
+
+      function pyStr(v, inContainer = false) {
+        if (v === null || v === undefined) return "None";
+        if (v === true) return "True";
+        if (v === false) return "False";
+        if (typeof v === "number") {
+          return Object.is(v, -0) ? "0" : String(v);
+        }
+        if (typeof v === "string") {
+          return inContainer ? "'" + v.replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'" : v;
+        }
+        if (Array.isArray(v)) {
+          return "[" + v.map(x => pyStr(x, true)).join(", ") + "]";
+        }
+        if (isTuple(v)) {
+          if (v.items.length === 1) return "(" + pyStr(v.items[0], true) + ",)";
+          return "(" + v.items.map(x => pyStr(x, true)).join(", ") + ")";
+        }
+        if (v.__pyType === "range") {
+          return `range(${v.start}, ${v.stop}${v.step !== 1 ? ", " + v.step : ""})`;
+        }
+        if (v.__pyType === "function") return `<function ${v.name}>`;
+        if (v.__pyType === "module") return `<module '${v.name}'>`;
+        if (v.__pyType === "tk_widget") return `<tkinter.${v.kind}>`;
+        return String(v);
+      }
+
+      function pyEqual(a, b) {
+        if (isPyNumber(a) && isPyNumber(b)) return toNum(a) === toNum(b);
+        if (typeof a === "string" && typeof b === "string") return a === b;
+        if (a === null && b === null) return true;
+        if (Array.isArray(a) && Array.isArray(b)) {
+          if (a.length !== b.length) return false;
+          for (let i = 0; i < a.length; i++) {
+            if (!pyEqual(a[i], b[i])) return false;
+          }
+          return true;
+        }
+        if (isTuple(a) && isTuple(b)) {
+          if (a.items.length !== b.items.length) return false;
+          for (let i = 0; i < a.items.length; i++) {
+            if (!pyEqual(a.items[i], b.items[i])) return false;
+          }
+          return true;
+        }
+        return a === b;
+      }
+
+      function pyCompare(a, b, line) {
+        if (isPyNumber(a) && isPyNumber(b)) {
+          return toNum(a) - toNum(b);
+        }
+        if (typeof a === "string" && typeof b === "string") {
+          return a < b ? -1 : a > b ? 1 : 0;
+        }
+        if (Array.isArray(a) && Array.isArray(b)) {
+          const len = Math.min(a.length, b.length);
+          for (let i = 0; i < len; i++) {
+            const c = pyCompare(a[i], b[i], line);
+            if (c !== 0) return c;
+          }
+          return a.length - b.length;
+        }
+        if (isTuple(a) && isTuple(b)) {
+          const len = Math.min(a.items.length, b.items.length);
+          for (let i = 0; i < len; i++) {
+            const c = pyCompare(a.items[i], b.items[i], line);
+            if (c !== 0) return c;
+          }
+          return a.items.length - b.items.length;
+        }
+        throw new PyError(
+          "Неможливо порівняти різні типи (TypeError)",
+          `Не можна порівнювати «${pyTypeName(a)}» та «${pyTypeName(b)}».`,
+          line,
+          "Переконайся, що обидва значення є числами або рядками. Якщо значення прийшло з input(), перетвори його через int() або float()."
+        );
+      }
+
+      function toIterableArray(v, line) {
+        if (Array.isArray(v)) return v;
+        if (isTuple(v)) return v.items;
+        if (typeof v === "string") return v.split("");
+        if (v && v.__pyType === "range") {
+          const out = [];
+          if (v.step > 0) {
+            for (let i = v.start; i < v.stop; i += v.step) out.push(i);
+          } else if (v.step < 0) {
+            for (let i = v.start; i > v.stop; i += v.step) out.push(i);
+          }
+          return out;
+        }
+        throw new PyError(
+          "Об'єкт не є перелічуваним (TypeError)",
+          `Не можна перебирати елементи типу «${pyTypeName(v)}».`,
+          line,
+          "Цикл for або функції sum/min/max працюють зі списками, кортежами, рядками або range()."
+        );
+      }
+
+      function normalizeIndex(rawIdx, len, line, kindName) {
+        if (!Number.isInteger(rawIdx) || typeof rawIdx === "boolean") {
+          throw new PyError(
+            "Неправильний тип індексу (TypeError)",
+            `Індекс має бути цілим числом (int), а отримано «${pyTypeName(rawIdx)}».`,
+            line,
+            "Переконайся, що всередині квадратних дужок [ ] знаходиться ціле число."
+          );
+        }
+        const i = rawIdx < 0 ? len + rawIdx : rawIdx;
+        if (i < 0 || i >= len) {
+          throw new PyError(
+            "Вихід за межі (IndexError)",
+            `Індекс ${rawIdx} виходить за межі ${kindName} (довжина: ${len}).`,
+            line,
+            len === 0
+              ? `${kindName[0].toUpperCase() + kindName.slice(1)} порожній, у ньому немає жодного елемента.`
+              : `Допустимі індекси: від 0 до ${len - 1} (або від -${len} до -1).`
+          );
+        }
+        return i;
+      }
+
+      function parseTkFont(fontVal) {
+        if (!fontVal) return null;
+        if (typeof fontVal === "string") {
+          const parts = fontVal.trim().split(/\s+/);
+          const family = parts[0] || "sans-serif";
+          const size = parseInt(parts[1], 10) || 14;
+          const weight = parts.includes("bold") ? "bold" : "normal";
+          const style = parts.includes("italic") ? "italic" : "normal";
+          return { family, size, weight, style };
+        }
+        if (isTuple(fontVal) || Array.isArray(fontVal)) {
+          const arr = isTuple(fontVal) ? fontVal.items : fontVal;
+          const family = arr[0] ? String(arr[0]) : "sans-serif";
+          const size = arr[1] ? Number(arr[1]) : 14;
+          const mods = arr.slice(2).map(x => String(x).toLowerCase()).join(" ");
+          const weight = mods.includes("bold") ? "bold" : "normal";
+          const style = mods.includes("italic") ? "italic" : "normal";
+          return { family, size, weight, style };
+        }
+        return null;
+      }
+
+      function normalizeColor(c) {
+        if (typeof c !== "string") return "";
+        const s = c.trim();
+        if (!s) return "";
+        if (s.toLowerCase() === "grey") return "gray";
+        return s;
+      }
+
+      /* ============================================================
+         11. OUTPUT UI & TKINTER SIMULATOR
+         ============================================================ */
+      let consoleLines = [];
+      let tkState = null;
+
+      function setStatus(text, type) {
+        statusBadge.textContent = text;
+        statusBadge.className = "status-badge" + (type ? " " + type : "");
+      }
+
+      function resetOutputUI() {
+        consoleLines = [];
+        consoleBox.innerHTML = `<span class="console-empty">Натисни «Запустити», щоб побачити результат.</span>`;
+        errorCard.classList.remove("active");
+        inputPromptBox.classList.remove("active");
+        tkStage.classList.remove("active");
+        tkBody.innerHTML = "";
+        tkBody.style.background = "#f0f0f0";
+        tkBody.style.width = "";
+        tkBody.style.height = "";
+        tkTitleText.textContent = "tk";
+        tkMsgOverlay.classList.remove("active");
+        tkState = null;
+      }
+
+      function appendConsole(text, isEcho = false) {
+        if (consoleLines.length === 0) {
+          consoleBox.innerHTML = "";
+        }
+        consoleLines.push({ text, isEcho });
+        const span = document.createElement("span");
+        if (isEcho) span.className = "console-input-echo";
+        span.textContent = text;
+        consoleBox.appendChild(span);
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+      }
+
+      function showPyError(err) {
+        currentErrorLine = err.line || 1;
+        updateLineNumbers();
+
+        const lines = codeEditor.value.split("\n");
+        const lineText = lines[currentErrorLine - 1] !== undefined ? lines[currentErrorLine - 1] : "";
+
+        errorTitle.textContent = err.title || "Помилка виконання";
+        errorWhat.innerHTML = `<strong>Що сталося:</strong> ${escapeHtml(err.what)}`;
+        errorSnippet.textContent = `Рядок ${currentErrorLine}: ${lineText.trim() || "(порожній рядок)"}`;
+        errorTip.innerHTML = `<strong>Як виправити:</strong> ${escapeHtml(err.tip)}`;
+        errorCard.classList.add("active");
+        setStatus(`Помилка (рядок ${currentErrorLine})`, "err");
+        errorCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function requestInteractiveInput(promptText, runId) {
+        return new Promise((resolve, reject) => {
+          if (runId !== currentRunId) {
+            reject(new Error("ABORTED"));
+            return;
+          }
+          pendingInputResolve = resolve;
+          pendingInputReject = reject;
+          setStatus("Очікування вводу", "wait");
+          inputPromptLabel.textContent = promptText ? String(promptText) : "Введіть значення (input):";
+          inputPromptField.value = "";
+          inputPromptBox.classList.add("active");
+          setTimeout(() => {
+            inputPromptField.focus();
+          }, 40);
+        });
+      }
+
+      inputPromptBox.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!pendingInputResolve) return;
+        const val = inputPromptField.value;
+        const promptText = inputPromptLabel.textContent;
+        inputPromptBox.classList.remove("active");
+        appendConsole((promptText ? promptText + " " : "") + val + "\n", true);
+        setStatus("Виконання...", "wait");
+        const r = pendingInputResolve;
+        pendingInputResolve = null;
+        pendingInputReject = null;
+        r(val);
+      });
+
+      function showTkMessageBox(kind, title, message) {
+        return new Promise((resolve) => {
+          tkStage.classList.add("active");
+          tkMsgHead.className = "tk-msg-head " + kind;
+          const prefix = kind === "warn" ? "⚠ " : kind === "err" ? "✖ " : "ℹ ";
+          tkMsgHead.textContent = prefix + (title || "Повідомлення");
+          tkMsgBody.textContent = message || "";
+          tkMsgOverlay.classList.add("active");
+          pendingMsgResolve = resolve;
+        });
+      }
+
+      tkMsgOkBtn.addEventListener("click", () => {
+        tkMsgOverlay.classList.remove("active");
+        if (pendingMsgResolve) {
+          const r = pendingMsgResolve;
+          pendingMsgResolve = null;
+          r();
+        }
+      });
+
+      /* ============================================================
+         12. SCOPE & INTERPRETER ENGINE
+         ============================================================ */
+      class Scope {
+        constructor(parent = null) {
+          this.parent = parent;
+          this.vars = Object.create(null);
+          this.globals = new Set();
+        }
+        get(name, line) {
+          if (this.globals.has(name)) {
+            return this.root().get(name, line);
+          }
+          if (Object.prototype.hasOwnProperty.call(this.vars, name)) {
+            return this.vars[name];
+          }
+          if (this.parent) {
+            return this.parent.get(name, line);
+          }
+          if (name === "random" || name === "math" || name === "tkinter" || name === "tk" || name === "messagebox") {
+            const importHint = name === "messagebox"
+              ? "from tkinter import messagebox"
+              : name === "tk"
+                ? "import tkinter as tk"
+                : `import ${name}`;
+            throw new PyError(
+              "Модуль не підключено (NameError)",
+              `Ти намагаєшся використати модуль «${name}», але не підключив(-ла) його на початку програми.`,
+              line,
+              `Додай рядок «${importHint}» у верхній частині коду.`
+            );
+          }
+          throw new PyError(
+            "Невідома змінна або функція (NameError)",
+            `Ім'я «${name}» не знайдено — ця змінна або функція ще не створена.`,
+            line,
+            `Перевір, чи немає помилки в написанні «${name}», або спочатку надай змінній значення (наприклад, ${name} = 0).`
+          );
+        }
+        set(name, value) {
+          if (this.globals.has(name)) {
+            this.root().vars[name] = value;
+            return;
+          }
+          this.vars[name] = value;
+        }
+        has(name) {
+          if (Object.prototype.hasOwnProperty.call(this.vars, name)) return true;
+          return this.parent ? this.parent.has(name) : false;
+        }
+        root() {
+          let cur = this;
+          while (cur.parent) cur = cur.parent;
+          return cur;
+        }
+      }
+
+      function createBuiltinsAndModules(runtime) {
+        const builtins = {
+          print: fnWrapper("print", async (args, kwargs) => {
+            const sep = kwargs.sep !== undefined ? pyStr(kwargs.sep) : " ";
+            const end = kwargs.end !== undefined ? pyStr(kwargs.end) : "\n";
+            const out = args.map(a => pyStr(a)).join(sep) + end;
+            appendConsole(out);
+            return null;
+          }),
+          input: fnWrapper("input", async (args) => {
+            const prompt = args.length > 0 ? pyStr(args[0]) : "";
+            return await requestInteractiveInput(prompt, runtime.runId);
+          }),
+          int: fnWrapper("int", async (args, _, line) => {
+            if (args.length === 0) return 0;
+            const v = args[0];
+            if (typeof v === "boolean") return v ? 1 : 0;
+            if (typeof v === "number") return Math.trunc(v);
+            if (typeof v === "string") {
+              const s = v.trim();
+              if (!/^[+-]?\d+$/.test(s)) {
+                throw new PyError(
+                  "Неможливо перетворити в ціле число (ValueError)",
+                  `Значення «${v}» не можна перетворити функцією int().`,
+                  line,
+                  "Вводь лише цифри без літер і крапок (наприклад, 15 або -4)."
+                );
+              }
+              return parseInt(s, 10);
+            }
+            throw new PyError("Помилка типу (TypeError)", `int() не приймає тип «${pyTypeName(v)}».`, line, "Передай рядок із цифр або число.");
+          }),
+          float: fnWrapper("float", async (args, _, line) => {
+            if (args.length === 0) return 0.0;
+            const v = args[0];
+            if (typeof v === "boolean") return v ? 1.0 : 0.0;
+            if (typeof v === "number") return v;
+            if (typeof v === "string") {
+              const s = v.trim().replace(",", ".");
+              if (!/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(s)) {
+                throw new PyError(
+                  "Неможливо перетворити в дробове число (ValueError)",
+                  `Значення «${v}» не можна перетворити функцією float().`,
+                  line,
+                  "Вводь число з крапкою, наприклад 3.14 або 7."
+                );
+              }
+              return parseFloat(s);
+            }
+            throw new PyError("Помилка типу (TypeError)", `float() не приймає тип «${pyTypeName(v)}».`, line, "Передай число або рядок з цифрами.");
+          }),
+          str: fnWrapper("str", async (args) => {
+            return args.length === 0 ? "" : pyStr(args[0]);
+          }),
+          bool: fnWrapper("bool", async (args) => {
+            return args.length === 0 ? false : isTruthy(args[0]);
+          }),
+          len: fnWrapper("len", async (args, _, line) => {
+            if (args.length !== 1) throw new PyError("Помилка len()", "Функція len() приймає рівно 1 аргумент.", line, "Приклад: len(spisok)");
+            const v = args[0];
+            if (typeof v === "string" || Array.isArray(v)) return v.length;
+            if (isTuple(v)) return v.items.length;
+            throw new PyError("Помилка len() (TypeError)", `Неможливо визначити довжину для типу «${pyTypeName(v)}».`, line, "len() працює зі списками, кортежами та рядками.");
+          }),
+          sum: fnWrapper("sum", async (args, _, line) => {
+            if (args.length < 1 || args.length > 2) throw new PyError("Помилка sum()", "sum() приймає список/кортеж чисел.", line, "Приклад: sum([1, 2, 3])");
+            const arr = toIterableArray(args[0], line);
+            let total = args.length === 2 ? toNum(args[1]) : 0;
+            for (const x of arr) {
+              if (!isPyNumber(x)) {
+                throw new PyError("Помилка sum() (TypeError)", "У списку для sum() є нечисловий елемент.", line, "Функція sum() вміє додавати лише числа.");
+              }
+              total += toNum(x);
+            }
+            return total;
+          }),
+          min: fnWrapper("min", async (args, _, line) => {
+            if (args.length === 0) throw new PyError("Помилка min()", "Функції min() потрібне хоча б одне значення.", line, "Наприклад: min(a) або min(3, 7)");
+            const arr = args.length === 1 ? toIterableArray(args[0], line) : args;
+            if (arr.length === 0) throw new PyError("Помилка min() (ValueError)", "Неможливо знайти мінімум у порожньому списку.", line, "Переконайся, що список містить хоча б один елемент.");
+            let best = arr[0];
+            for (let i = 1; i < arr.length; i++) {
+              if (pyCompare(arr[i], best, line) < 0) best = arr[i];
+            }
+            return best;
+          }),
+          max: fnWrapper("max", async (args, _, line) => {
+            if (args.length === 0) throw new PyError("Помилка max()", "Функції max() потрібне хоча б одне значення.", line, "Наприклад: max(a) або max(3, 7)");
+            const arr = args.length === 1 ? toIterableArray(args[0], line) : args;
+            if (arr.length === 0) throw new PyError("Помилка max() (ValueError)", "Неможливо знайти максимум у порожньому списку.", line, "Переконайся, що список містить хоча б один елемент.");
+            let best = arr[0];
+            for (let i = 1; i < arr.length; i++) {
+              if (pyCompare(arr[i], best, line) > 0) best = arr[i];
+            }
+            return best;
+          }),
+          abs: fnWrapper("abs", async (args, _, line) => {
+            if (args.length !== 1 || !isPyNumber(args[0])) throw new PyError("Помилка abs()", "abs() приймає одне число.", line, "Наприклад: abs(-5)");
+            return Math.abs(toNum(args[0]));
+          }),
+          round: fnWrapper("round", async (args, _, line) => {
+            if (args.length < 1 || !isPyNumber(args[0])) throw new PyError("Помилка round()", "round() очікує число.", line, "Наприклад: round(3.1415, 2)");
+            const num = toNum(args[0]);
+            if (args.length === 1) return Math.round(num);
+            const digits = toNum(args[1]);
+            const factor = Math.pow(10, digits);
+            return Math.round(num * factor) / factor;
+          }),
+          range: fnWrapper("range", async (args, _, line) => {
+            if (args.length < 1 || args.length > 3) {
+              throw new PyError("Помилка range()", "range() приймає від 1 до 3 цілих чисел.", line, "Приклади: range(5), range(1, 10), range(0, 10, 2)");
+            }
+            for (const a of args) {
+              if (!Number.isInteger(a) || typeof a === "boolean") {
+                throw new PyError("Помилка range() (TypeError)", "Усі аргументи range() мають бути цілими числами.", line, "Не використовуй дробові числа або рядки всередині range().");
+              }
+            }
+            let start = 0, stop = 0, step = 1;
+            if (args.length === 1) stop = args[0];
+            else if (args.length === 2) { start = args[0]; stop = args[1]; }
+            else { start = args[0]; stop = args[1]; step = args[2]; }
+            if (step === 0) throw new PyError("Помилка range() (ValueError)", "Крок у range() не може дорівнювати 0.", line, "Вкажи ненульовий крок, наприклад 1 або -1.");
+            return { __pyType: "range", start, stop, step };
+          }),
+          list: fnWrapper("list", async (args, _, line) => {
+            if (args.length === 0) return [];
+            return [...toIterableArray(args[0], line)];
+          }),
+          tuple: fnWrapper("tuple", async (args, _, line) => {
+            if (args.length === 0) return makeTuple([]);
+            return makeTuple([...toIterableArray(args[0], line)]);
+          }),
+          sorted: fnWrapper("sorted", async (args, kwargs, line) => {
+            if (args.length !== 1) throw new PyError("Помилка sorted()", "sorted() приймає послідовність.", line, "Приклад: sorted(a)");
+            const copy = [...toIterableArray(args[0], line)];
+            const rev = kwargs.reverse ? isTruthy(kwargs.reverse) : false;
+            copy.sort((a, b) => rev ? pyCompare(b, a, line) : pyCompare(a, b, line));
+            return copy;
+          }),
+          enumerate: fnWrapper("enumerate", async (args, _, line) => {
+            if (args.length < 1) throw new PyError("Помилка enumerate()", "enumerate() приймає послідовність.", line, "Приклад: for i, val in enumerate(a):");
+            const arr = toIterableArray(args[0], line);
+            const start = args.length >= 2 ? toNum(args[1]) : 0;
+            return arr.map((item, idx) => makeTuple([start + idx, item]));
+          }),
+          type: fnWrapper("type", async (args) => {
+            return `<class '${pyTypeName(args[0])}'>`;
+          })
+        };
+
+        /* Module: random */
+        const randomMod = {
+          __pyType: "module",
+          name: "random",
+          attrs: {
+            randint: fnWrapper("random.randint", async (args, _, line) => {
+              if (args.length !== 2 || !Number.isInteger(args[0]) || !Number.isInteger(args[1])) {
+                throw new PyError("Помилка random.randint()", "random.randint(a, b) очікує два цілі числа.", line, "Приклад: random.randint(1, 10)");
+              }
+              const a = args[0], b = args[1];
+              if (a > b) throw new PyError("Помилка меж у random.randint()", `Ліва межа (${a}) більша за праву (${b}).`, line, "Перше число має бути меншим або рівним другому.");
+              return Math.floor(Math.random() * (b - a + 1)) + a;
+            }),
+            choice: fnWrapper("random.choice", async (args, _, line) => {
+              if (args.length !== 1) throw new PyError("Помилка random.choice()", "random.choice() приймає 1 список, кортеж або рядок.", line, "Приклад: random.choice(colors)");
+              const arr = toIterableArray(args[0], line);
+              if (arr.length === 0) throw new PyError("Помилка random.choice() (IndexError)", "Не можна вибрати випадковий елемент із порожнього списку.", line, "Додай елементи у список перед викликом choice().");
+              return arr[Math.floor(Math.random() * arr.length)];
+            }),
+            shuffle: fnWrapper("random.shuffle", async (args, _, line) => {
+              if (args.length !== 1 || !Array.isArray(args[0])) {
+                throw new PyError("Помилка random.shuffle()", "random.shuffle() перемішує тільки список (list).", line, "Передай список, наприклад: random.shuffle(cards)");
+              }
+              const arr = args[0];
+              for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+              }
+              return null;
+            }),
+            random: fnWrapper("random.random", async () => Math.random()),
+            uniform: fnWrapper("random.uniform", async (args, _, line) => {
+              if (args.length !== 2 || !isPyNumber(args[0]) || !isPyNumber(args[1])) {
+                throw new PyError("Помилка random.uniform()", "random.uniform(a, b) очікує два числа.", line, "Приклад: random.uniform(1.0, 5.0)");
+              }
+              const a = toNum(args[0]), b = toNum(args[1]);
+              return a + Math.random() * (b - a);
+            })
+          }
+        };
+
+        /* Module: math */
+        const mathMod = {
+          __pyType: "module",
+          name: "math",
+          attrs: {
+            pi: Math.PI,
+            e: Math.E,
+            sqrt: fnWrapper("math.sqrt", async (args, _, line) => {
+              if (args.length !== 1 || !isPyNumber(args[0])) throw new PyError("Помилка math.sqrt()", "math.sqrt(x) очікує одне число.", line, "Приклад: math.sqrt(25)");
+              const x = toNum(args[0]);
+              if (x < 0) throw new PyError("Корінь з від'ємного числа (ValueError)", "Неможливо обчислити квадратний корінь з від'ємного числа.", line, "Переконайся, що число під коренем >= 0.");
+              return Math.sqrt(x);
+            }),
+            ceil: fnWrapper("math.ceil", async (args, _, line) => {
+              if (args.length !== 1 || !isPyNumber(args[0])) throw new PyError("Помилка math.ceil()", "math.ceil(x) очікує число.", line, "Приклад: math.ceil(4.2)");
+              return Math.ceil(toNum(args[0]));
+            }),
+            floor: fnWrapper("math.floor", async (args, _, line) => {
+              if (args.length !== 1 || !isPyNumber(args[0])) throw new PyError("Помилка math.floor()", "math.floor(x) очікує число.", line, "Приклад: math.floor(4.8)");
+              return Math.floor(toNum(args[0]));
+            }),
+            pow: fnWrapper("math.pow", async (args, _, line) => {
+              if (args.length !== 2 || !isPyNumber(args[0]) || !isPyNumber(args[1])) throw new PyError("Помилка math.pow()", "math.pow(x, y) очікує два числа.", line, "Приклад: math.pow(2, 5)");
+              return Math.pow(toNum(args[0]), toNum(args[1]));
+            }),
+            fabs: fnWrapper("math.fabs", async (args, _, line) => {
+              if (args.length !== 1 || !isPyNumber(args[0])) throw new PyError("Помилка math.fabs()", "math.fabs(x) очікує число.", line, "Приклад: math.fabs(-7.5)");
+              return Math.abs(toNum(args[0]));
+            }),
+            sin: fnWrapper("math.sin", async (args, _, line) => Math.sin(toNum(args[0]))),
+            cos: fnWrapper("math.cos", async (args, _, line) => Math.cos(toNum(args[0]))),
+            tan: fnWrapper("math.tan", async (args, _, line) => Math.tan(toNum(args[0]))),
+            radians: fnWrapper("math.radians", async (args) => toNum(args[0]) * Math.PI / 180),
+            degrees: fnWrapper("math.degrees", async (args) => toNum(args[0]) * 180 / Math.PI),
+            factorial: fnWrapper("math.factorial", async (args, _, line) => {
+              const n = args[0];
+              if (!Number.isInteger(n) || n < 0) throw new PyError("Помилка math.factorial()", "Факторіал обчислюється лише для невід'ємних цілих чисел.", line, "Приклад: math.factorial(5)");
+              let res = 1;
+              for (let i = 2; i <= n; i++) res *= i;
+              return res;
+            })
+          }
+        };
+
+        /* Module: tkinter.messagebox */
+        const messageboxMod = {
+          __pyType: "module",
+          name: "tkinter.messagebox",
+          attrs: {
+            showinfo: fnWrapper("messagebox.showinfo", async (args, kwargs) => {
+              const title = kwargs.title !== undefined ? pyStr(kwargs.title) : (args[0] !== undefined ? pyStr(args[0]) : "Інформація");
+              const msg = kwargs.message !== undefined ? pyStr(kwargs.message) : (args[1] !== undefined ? pyStr(args[1]) : "");
+              await showTkMessageBox("info", title, msg);
+              return "ok";
+            }),
+            showwarning: fnWrapper("messagebox.showwarning", async (args, kwargs) => {
+              const title = kwargs.title !== undefined ? pyStr(kwargs.title) : (args[0] !== undefined ? pyStr(args[0]) : "Попередження");
+              const msg = kwargs.message !== undefined ? pyStr(kwargs.message) : (args[1] !== undefined ? pyStr(args[1]) : "");
+              await showTkMessageBox("warn", title, msg);
+              return "ok";
+            }),
+            showerror: fnWrapper("messagebox.showerror", async (args, kwargs) => {
+              const title = kwargs.title !== undefined ? pyStr(kwargs.title) : (args[0] !== undefined ? pyStr(args[0]) : "Помилка");
+              const msg = kwargs.message !== undefined ? pyStr(kwargs.message) : (args[1] !== undefined ? pyStr(args[1]) : "");
+              await showTkMessageBox("err", title, msg);
+              return "ok";
+            })
+          }
+        };
+
+        /* Module: tkinter */
+        function ensureTkRoot(parentArg, line, widgetName) {
+          if (!tkState) {
+            throw new PyError(
+              "Вікно Tk() ще не створене",
+              `Перед створенням «${widgetName}» спочатку потрібно створити головне вікно командою Tk().`,
+              line,
+              "Додай рядок: root = tk.Tk() (або root = Tk()), а потім передавай root першим аргументом."
+            );
+          }
+          if (parentArg && parentArg.__pyType === "tk_widget" && parentArg.kind === "Tk") {
+            return parentArg;
+          }
+          return tkState.rootWidget;
+        }
+
+        function applyWidgetStyles(el, props, kind) {
+          if (props.bg !== undefined) {
+            const bg = normalizeColor(pyStr(props.bg));
+            if (bg) el.style.backgroundColor = bg;
+          }
+          if (props.background !== undefined) {
+            const bg = normalizeColor(pyStr(props.background));
+            if (bg) el.style.backgroundColor = bg;
+          }
+          if (props.fg !== undefined) {
+            const fg = normalizeColor(pyStr(props.fg));
+            if (fg) el.style.color = fg;
+          }
+          if (props.foreground !== undefined) {
+            const fg = normalizeColor(pyStr(props.foreground));
+            if (fg) el.style.color = fg;
+          }
+          if (props.font !== undefined) {
+            const f = parseTkFont(props.font);
+            if (f) {
+              el.style.fontFamily = f.family + ", sans-serif";
+              el.style.fontSize = f.size + "px";
+              el.style.fontWeight = f.weight;
+              el.style.fontStyle = f.style;
+            }
+          }
+          if (kind === "Label" || kind === "Button") {
+            if (props.text !== undefined) el.textContent = pyStr(props.text);
+          }
+          if (kind === "Entry") {
+            if (props.width !== undefined) {
+              const ch = Number(props.width);
+              if (ch > 0) el.style.width = Math.min(ch * 9 + 16, 300) + "px";
+            }
+            if (props.show !== undefined) {
+              el.type = pyStr(props.show) ? "password" : "text";
+            }
+          }
+          if (kind === "Canvas") {
+            const w = props.width !== undefined ? Number(props.width) : 280;
+            const h = props.height !== undefined ? Number(props.height) : 200;
+            if (w > 0 && el.width !== w) el.width = w;
+            if (h > 0 && el.height !== h) el.height = h;
+          }
+        }
+
+        function redrawCanvas(widget) {
+          const canvas = widget.domEl;
+          const ctx = canvas.getContext("2d");
+          const bg = widget.props.bg ? normalizeColor(pyStr(widget.props.bg)) : "#ffffff";
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = bg || "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          for (const cmd of widget.drawCmds) {
+            ctx.save();
+            if (cmd.kind === "line") {
+              ctx.beginPath();
+              ctx.moveTo(cmd.coords[0], cmd.coords[1]);
+              for (let i = 2; i < cmd.coords.length; i += 2) {
+                ctx.lineTo(cmd.coords[i], cmd.coords[i + 1]);
+              }
+              ctx.strokeStyle = cmd.fill || "#000000";
+              ctx.lineWidth = cmd.width;
+              ctx.lineCap = "round";
+              ctx.lineJoin = "round";
+              ctx.stroke();
+            } else if (cmd.kind === "rectangle") {
+              const x = Math.min(cmd.coords[0], cmd.coords[2]);
+              const y = Math.min(cmd.coords[1], cmd.coords[3]);
+              const w = Math.abs(cmd.coords[2] - cmd.coords[0]);
+              const h = Math.abs(cmd.coords[3] - cmd.coords[1]);
+              if (cmd.fill) {
+                ctx.fillStyle = cmd.fill;
+                ctx.fillRect(x, y, w, h);
+              }
+              if (cmd.outline !== "" && cmd.width > 0) {
+                ctx.strokeStyle = cmd.outline || "#000000";
+                ctx.lineWidth = cmd.width;
+                ctx.strokeRect(x, y, w, h);
+              }
+            } else if (cmd.kind === "oval") {
+              const cx = (cmd.coords[0] + cmd.coords[2]) / 2;
+              const cy = (cmd.coords[1] + cmd.coords[3]) / 2;
+              const rx = Math.abs(cmd.coords[2] - cmd.coords[0]) / 2;
+              const ry = Math.abs(cmd.coords[3] - cmd.coords[1]) / 2;
+              ctx.beginPath();
+              ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+              if (cmd.fill) {
+                ctx.fillStyle = cmd.fill;
+                ctx.fill();
+              }
+              if (cmd.outline !== "" && cmd.width > 0) {
+                ctx.strokeStyle = cmd.outline || "#000000";
+                ctx.lineWidth = cmd.width;
+                ctx.stroke();
+              }
+            } else if (cmd.kind === "polygon") {
+              ctx.beginPath();
+              ctx.moveTo(cmd.coords[0], cmd.coords[1]);
+              for (let i = 2; i < cmd.coords.length; i += 2) {
+                ctx.lineTo(cmd.coords[i], cmd.coords[i + 1]);
+              }
+              ctx.closePath();
+              if (cmd.fill) {
+                ctx.fillStyle = cmd.fill;
+                ctx.fill();
+              }
+              if (cmd.outline !== "" && cmd.width > 0) {
+                ctx.strokeStyle = cmd.outline || "#000000";
+                ctx.lineWidth = cmd.width;
+                ctx.stroke();
+              }
+            } else if (cmd.kind === "text") {
+              const f = cmd.font || { family: "sans-serif", size: 14, weight: "normal", style: "normal" };
+              ctx.font = `${f.style} ${f.weight} ${f.size}px ${f.family}, sans-serif`;
+              ctx.fillStyle = cmd.fill || "#000000";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillText(cmd.text, cmd.x, cmd.y);
+            }
+            ctx.restore();
+          }
+        }
+
+        function extractNumericCoords(args, minCount, exactCount, methodName, line) {
+          let raw = args;
+          if (args.length === 1 && (Array.isArray(args[0]) || isTuple(args[0]))) {
+            raw = Array.isArray(args[0]) ? args[0] : args[0].items;
+          }
+          if (exactCount !== null && raw.length !== exactCount) {
+            const coordDesc = exactCount === 2 ? "(x, y)" : "(x1, y1, x2, y2)";
+            const exampleDesc = exactCount === 2
+              ? `canvas.${methodName}(140, 30, text="Привіт")`
+              : `canvas.${methodName}(20, 20, 120, 80)`;
+            throw new PyError(
+              `Невірна кількість координат у ${methodName}()`,
+              `Для методу ${methodName}() потрібно рівно ${exactCount} координати ${coordDesc}, а передано ${raw.length}.`,
+              line,
+              `Передай ${exactCount} числа, наприклад: ${exampleDesc}`
+            );
+          }
+          if (raw.length < minCount || raw.length % 2 !== 0) {
+            throw new PyError(
+              `Невірна кількість координат у ${methodName}()`,
+              `Для методу ${methodName}() потрібно щонайменше ${minCount} числових координат (парна кількість: x1, y1, ...), а передано ${raw.length}.`,
+              line,
+              `Вкажи координати парами (x, y), наприклад: canvas.${methodName}(10, 10, 100, 100)`
+            );
+          }
+          const nums = [];
+          for (let i = 0; i < raw.length; i++) {
+            if (!isPyNumber(raw[i])) {
+              throw new PyError(
+                `Координата має бути числом у ${methodName}()`,
+                `Координата №${i + 1} має тип «${pyTypeName(raw[i])}», а потрібне число.`,
+                line,
+                "Переконайся, що всі координати x та y — це числа."
+              );
+            }
+            nums.push(toNum(raw[i]));
+          }
+          return nums;
+        }
+
+        function createWidgetObject(kind, props, domEl) {
+          const widget = {
+            __pyType: "tk_widget",
+            kind,
+            props: { ...props },
+            domEl,
+            mounted: false,
+            drawCmds: [],
+            attrs: {}
+          };
+
+          const configFn = fnWrapper("config", async (_, kwargs) => {
+            Object.assign(widget.props, kwargs);
+            if (kind === "Tk") {
+              const bg = widget.props.bg || widget.props.background;
+              if (bg) tkBody.style.backgroundColor = normalizeColor(pyStr(bg));
+            } else {
+              applyWidgetStyles(widget.domEl, widget.props, kind);
+              if (kind === "Canvas") redrawCanvas(widget);
+            }
+            return null;
+          });
+
+          widget.attrs.config = configFn;
+          widget.attrs.configure = configFn;
+
+          if (kind !== "Tk") {
+            widget.attrs.pack = fnWrapper("pack", async (_, kwargs) => {
+              if (!widget.mounted) {
+                tkBody.appendChild(widget.domEl);
+                widget.mounted = true;
+              }
+              widget.domEl.style.position = "static";
+              const py = kwargs.pady !== undefined ? Number(kwargs.pady) : 3;
+              const px = kwargs.padx !== undefined ? Number(kwargs.padx) : 0;
+              widget.domEl.style.margin = `${py}px ${px}px`;
+              if (kind === "Canvas") redrawCanvas(widget);
+              return null;
+            });
+
+            widget.attrs.place = fnWrapper("place", async (_, kwargs, line) => {
+              if (!widget.mounted) {
+                tkBody.appendChild(widget.domEl);
+                widget.mounted = true;
+              }
+              const x = kwargs.x !== undefined ? Number(kwargs.x) : 0;
+              const y = kwargs.y !== undefined ? Number(kwargs.y) : 0;
+              if (Number.isNaN(x) || Number.isNaN(y)) {
+                throw new PyError("Помилка .place()", "Координати x та y у .place() мають бути числами.", line, "Приклад: btn.place(x=50, y=80)");
+              }
+              widget.domEl.style.position = "absolute";
+              widget.domEl.style.left = x + "px";
+              widget.domEl.style.top = y + "px";
+              widget.domEl.style.margin = "0";
+              if (kind === "Canvas") redrawCanvas(widget);
+              return null;
+            });
+
+            widget.attrs.grid = fnWrapper("grid", async () => {
+              if (!widget.mounted) {
+                tkBody.appendChild(widget.domEl);
+                widget.mounted = true;
+              }
+              widget.domEl.style.position = "static";
+              if (kind === "Canvas") redrawCanvas(widget);
+              return null;
+            });
+          }
+
+          if (kind === "Entry") {
+            widget.attrs.get = fnWrapper("get", async () => widget.domEl.value);
+            widget.attrs.delete = fnWrapper("delete", async (args) => {
+              const start = args[0] === 0 ? 0 : Number(args[0]) || 0;
+              const end = args[1] === "end" ? widget.domEl.value.length : Number(args[1]);
+              if (start === 0 && (args[1] === "end" || end >= widget.domEl.value.length)) {
+                widget.domEl.value = "";
+              }
+              return null;
+            });
+            widget.attrs.insert = fnWrapper("insert", async (args) => {
+              const txt = args[1] !== undefined ? pyStr(args[1]) : "";
+              widget.domEl.value += txt;
+              return null;
+            });
+          }
+
+          if (kind === "Canvas") {
+            widget.attrs.create_line = fnWrapper("create_line", async (args, kwargs, line) => {
+              const coords = extractNumericCoords(args, 4, null, "create_line", line);
+              const fill = kwargs.fill !== undefined ? normalizeColor(pyStr(kwargs.fill)) : "#000000";
+              const width = kwargs.width !== undefined ? Number(kwargs.width) : 1;
+              widget.drawCmds.push({ kind: "line", coords, fill, width });
+              redrawCanvas(widget);
+              return widget.drawCmds.length;
+            });
+            widget.attrs.create_rectangle = fnWrapper("create_rectangle", async (args, kwargs, line) => {
+              const coords = extractNumericCoords(args, 4, 4, "create_rectangle", line);
+              const fill = kwargs.fill !== undefined ? normalizeColor(pyStr(kwargs.fill)) : "";
+              const outline = kwargs.outline !== undefined ? normalizeColor(pyStr(kwargs.outline)) : "#000000";
+              const width = kwargs.width !== undefined ? Number(kwargs.width) : 1;
+              widget.drawCmds.push({ kind: "rectangle", coords, fill, outline, width });
+              redrawCanvas(widget);
+              return widget.drawCmds.length;
+            });
+            widget.attrs.create_oval = fnWrapper("create_oval", async (args, kwargs, line) => {
+              const coords = extractNumericCoords(args, 4, 4, "create_oval", line);
+              const fill = kwargs.fill !== undefined ? normalizeColor(pyStr(kwargs.fill)) : "";
+              const outline = kwargs.outline !== undefined ? normalizeColor(pyStr(kwargs.outline)) : "#000000";
+              const width = kwargs.width !== undefined ? Number(kwargs.width) : 1;
+              widget.drawCmds.push({ kind: "oval", coords, fill, outline, width });
+              redrawCanvas(widget);
+              return widget.drawCmds.length;
+            });
+            widget.attrs.create_polygon = fnWrapper("create_polygon", async (args, kwargs, line) => {
+              const coords = extractNumericCoords(args, 6, null, "create_polygon", line);
+              const fill = kwargs.fill !== undefined ? normalizeColor(pyStr(kwargs.fill)) : "#000000";
+              const outline = kwargs.outline !== undefined ? normalizeColor(pyStr(kwargs.outline)) : "";
+              const width = kwargs.width !== undefined ? Number(kwargs.width) : 1;
+              widget.drawCmds.push({ kind: "polygon", coords, fill, outline, width });
+              redrawCanvas(widget);
+              return widget.drawCmds.length;
+            });
+            widget.attrs.create_text = fnWrapper("create_text", async (args, kwargs, line) => {
+              const coords = extractNumericCoords(args, 2, 2, "create_text", line);
+              const text = kwargs.text !== undefined ? pyStr(kwargs.text) : "";
+              const fill = kwargs.fill !== undefined ? normalizeColor(pyStr(kwargs.fill)) : "#000000";
+              const font = parseTkFont(kwargs.font);
+              widget.drawCmds.push({ kind: "text", x: coords[0], y: coords[1], text, fill, font });
+              redrawCanvas(widget);
+              return widget.drawCmds.length;
+            });
+            widget.attrs.delete = fnWrapper("delete", async (args) => {
+              if (args[0] === "all") {
+                widget.drawCmds = [];
+                redrawCanvas(widget);
+              }
+              return null;
+            });
+          }
+
+          return widget;
+        }
+
+        const tkinterMod = {
+          __pyType: "module",
+          name: "tkinter",
+          attrs: {
+            END: "end",
+            CENTER: "center",
+            LEFT: "left",
+            RIGHT: "right",
+            TOP: "top",
+            BOTTOM: "bottom",
+            BOTH: "both",
+            X: "x",
+            Y: "y",
+            messagebox: messageboxMod,
+            Tk: fnWrapper("Tk", async () => {
+              tkBody.innerHTML = "";
+              tkBody.style.backgroundColor = "#f0f0f0";
+              tkBody.style.width = "";
+              tkBody.style.height = "";
+              tkTitleText.textContent = "tk";
+              tkStage.classList.add("active");
+
+              const rootWidget = createWidgetObject("Tk", {}, tkBody);
+              rootWidget.attrs.title = fnWrapper("title", async (args) => {
+                if (args[0] !== undefined) tkTitleText.textContent = pyStr(args[0]);
+                return null;
+              });
+              rootWidget.attrs.geometry = fnWrapper("geometry", async (args, _, line) => {
+                if (args[0] !== undefined) {
+                  const g = pyStr(args[0]);
+                  const m = g.match(/^(\d+)x(\d+)/i);
+                  if (!m) {
+                    throw new PyError("Помилка geometry()", `Неправильний формат розміру «${g}».`, line, "Вказуй розміри у форматі \"ширинаxвисота\", наприклад: root.geometry(\"320x240\")");
+                  }
+                  const w = Math.min(parseInt(m[1], 10), 600);
+                  const h = Math.min(parseInt(m[2], 10), 600);
+                  tkBody.style.width = w + "px";
+                  tkBody.style.minHeight = h + "px";
+                }
+                return null;
+              });
+              rootWidget.attrs.mainloop = fnWrapper("mainloop", async () => null);
+              rootWidget.attrs.resizable = fnWrapper("resizable", async () => null);
+              rootWidget.attrs.destroy = fnWrapper("destroy", async () => {
+                tkStage.classList.remove("active");
+                return null;
+              });
+
+              tkState = { rootWidget, runId: runtime.runId };
+              return rootWidget;
+            }),
+            Label: fnWrapper("Label", async (args, kwargs, line) => {
+              ensureTkRoot(args[0], line, "Label");
+              const el = document.createElement("div");
+              el.className = "tk-widget-label";
+              const w = createWidgetObject("Label", kwargs, el);
+              applyWidgetStyles(el, w.props, "Label");
+              return w;
+            }),
+            Entry: fnWrapper("Entry", async (args, kwargs, line) => {
+              ensureTkRoot(args[0], line, "Entry");
+              const el = document.createElement("input");
+              el.type = "text";
+              el.className = "tk-widget-entry";
+              const w = createWidgetObject("Entry", kwargs, el);
+              applyWidgetStyles(el, w.props, "Entry");
+              return w;
+            }),
+            Button: fnWrapper("Button", async (args, kwargs, line) => {
+              ensureTkRoot(args[0], line, "Button");
+              const el = document.createElement("button");
+              el.type = "button";
+              el.className = "tk-widget-button";
+              const w = createWidgetObject("Button", kwargs, el);
+              applyWidgetStyles(el, w.props, "Button");
+              el.addEventListener("click", async () => {
+                if (runtime.runId !== currentRunId) return;
+                const cmd = w.props.command;
+                if (cmd && cmd.__pyType === "function") {
+                  try {
+                    await callPyFunction(cmd, [], {}, line, runtime);
+                  } catch (err) {
+                    if (err instanceof PyError) showPyError(err);
+                  }
+                }
+              });
+              return w;
+            }),
+            Canvas: fnWrapper("Canvas", async (args, kwargs, line) => {
+              ensureTkRoot(args[0], line, "Canvas");
+              const el = document.createElement("canvas");
+              el.className = "tk-widget-canvas";
+              el.width = 280;
+              el.height = 200;
+              const w = createWidgetObject("Canvas", kwargs, el);
+              applyWidgetStyles(el, w.props, "Canvas");
+              redrawCanvas(w);
+              return w;
+            })
+          }
+        };
+
+        return {
+          builtins,
+          modules: {
+            random: randomMod,
+            math: mathMod,
+            tkinter: tkinterMod,
+            "tkinter.messagebox": messageboxMod
+          }
+        };
+      }
+
+      function fnWrapper(name, impl) {
+        return { __pyType: "function", name, isNative: true, impl };
+      }
+
+      /* ============================================================
+         13. AST EVALUATOR (ASYNC)
+         ============================================================ */
+      async function executeProgram(source, runId) {
+        const tokens = tokenize(source);
+        const ast = parse(tokens);
+        const runtime = {
+          runId,
+          steps: 0,
+          maxSteps: 60000,
+          callDepth: 0,
+          ...createBuiltinsAndModules(null)
+        };
+        // Re-bind runtime ref inside modules
+        Object.assign(runtime, createBuiltinsAndModules(runtime));
+
+        const globalScope = new Scope(null);
+        for (const [k, v] of Object.entries(runtime.builtins)) {
+          globalScope.set(k, v);
+        }
+
+        await execBlock(ast.body, globalScope, runtime);
+      }
+
+      async function tickStep(runtime, line) {
+        if (runtime.runId !== currentRunId) {
+          throw new Error("ABORTED");
+        }
+        runtime.steps++;
+        if (runtime.steps > runtime.maxSteps) {
+          throw new PyError(
+            "Програма виконується занадто довго (Нескінченний цикл)",
+            "Кількість кроків перевищила ліміт. Схоже, цикл while або рекурсія не зупиняються.",
+            line,
+            "Перевір умову циклу while: змінна в умові має змінюватися всередині циклу, щоб умова колись стала False."
+          );
+        }
+        if (runtime.steps % 400 === 0) {
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+
+      async function execBlock(stmts, scope, runtime) {
+        for (const stmt of stmts) {
+          const res = await execStmt(stmt, scope, runtime);
+          if (res === BREAK_SIG || res === CONT_SIG || (res && res.__return)) {
+            return res;
+          }
+        }
+        return null;
+      }
+
+      async function execStmt(stmt, scope, runtime) {
+        await tickStep(runtime, stmt.line);
+
+        switch (stmt.type) {
+          case "Pass":
+            return null;
+          case "Break":
+            return BREAK_SIG;
+          case "Continue":
+            return CONT_SIG;
+          case "Global":
+            for (const n of stmt.names) scope.globals.add(n);
+            return null;
+          case "Return": {
+            const val = stmt.value ? await evalExpr(stmt.value, scope, runtime) : null;
+            return { __return: true, value: val };
+          }
+          case "ExprStmt":
+            await evalExpr(stmt.expr, scope, runtime);
+            return null;
+
+          case "Import": {
+            for (const item of stmt.items) {
+              const mod = runtime.modules[item.module];
+              if (!mod) {
+                throw new PyError(
+                  "Модуль не підтримується (ModuleNotFoundError)",
+                  `Модуль «${item.module}» недоступний у цьому тренажері.`,
+                  stmt.line,
+                  "У тренажері 8 класу підтримуються модулі: random, math, tkinter, tkinter.messagebox."
+                );
+              }
+              if (item.module.includes(".") && !item.alias) {
+                const parts = item.module.split(".");
+                const parentMod = runtime.modules[parts[0]];
+                if (parentMod) {
+                  scope.set(parts[0], parentMod);
+                }
+              } else {
+                scope.set(item.alias || item.module, mod);
+              }
+            }
+            return null;
+          }
+
+          case "FromImport": {
+            const mod = runtime.modules[stmt.module];
+            if (!mod) {
+              throw new PyError(
+                "Модуль не підтримується (ModuleNotFoundError)",
+                `Модуль «${stmt.module}» недоступний у цьому тренажері.`,
+                stmt.line,
+                "Перевір назву модуля: random, math, tkinter або tkinter.messagebox."
+              );
+            }
+            if (stmt.names === "*") {
+              for (const [k, v] of Object.entries(mod.attrs)) {
+                scope.set(k, v);
+              }
+            } else {
+              for (const entry of stmt.names) {
+                if (!(entry.name in mod.attrs)) {
+                  throw new PyError(
+                    "Не вдається імпортувати ім'я (ImportError)",
+                    `У модулі «${stmt.module}» немає команди або об'єкта «${entry.name}».`,
+                    stmt.line,
+                    "Перевір правильність написання назви після import."
+                  );
+                }
+                scope.set(entry.alias, mod.attrs[entry.name]);
+              }
+            }
+            return null;
+          }
+
+          case "Assign": {
+            const val = await evalExpr(stmt.value, scope, runtime);
+            await assignTarget(stmt.target, val, scope, runtime, stmt.line);
+            return null;
+          }
+
+          case "AugAssign": {
+            const cur = await evalExpr(stmt.target, scope, runtime);
+            const rhs = await evalExpr(stmt.value, scope, runtime);
+            const nextVal = evalBinaryOp(stmt.op, cur, rhs, stmt.line);
+            await assignTarget(stmt.target, nextVal, scope, runtime, stmt.line);
+            return null;
+          }
+
+          case "If": {
+            if (isTruthy(await evalExpr(stmt.test, scope, runtime))) {
+              return await execBlock(stmt.body, scope, runtime);
+            }
+            for (const el of stmt.elifs) {
+              if (isTruthy(await evalExpr(el.test, scope, runtime))) {
+                return await execBlock(el.body, scope, runtime);
+              }
+            }
+            if (stmt.elseBody) {
+              return await execBlock(stmt.elseBody, scope, runtime);
+            }
+            return null;
+          }
+
+          case "While": {
+            while (isTruthy(await evalExpr(stmt.test, scope, runtime))) {
+              await tickStep(runtime, stmt.line);
+              const res = await execBlock(stmt.body, scope, runtime);
+              if (res === BREAK_SIG) break;
+              if (res && res.__return) return res;
+            }
+            return null;
+          }
+
+          case "For": {
+            const iterVal = await evalExpr(stmt.iter, scope, runtime);
+            const items = toIterableArray(iterVal, stmt.line);
+            for (const item of items) {
+              await tickStep(runtime, stmt.line);
+              await assignTarget(stmt.target, item, scope, runtime, stmt.line);
+              const res = await execBlock(stmt.body, scope, runtime);
+              if (res === BREAK_SIG) break;
+              if (res && res.__return) return res;
+            }
+            return null;
+          }
+
+          case "Def": {
+            const defDefaults = [];
+            for (const p of stmt.params) {
+              defDefaults.push(p.default ? await evalExpr(p.default, scope, runtime) : undefined);
+            }
+            const fnObj = {
+              __pyType: "function",
+              name: stmt.name,
+              isNative: false,
+              params: stmt.params,
+              defaults: defDefaults,
+              body: stmt.body,
+              closure: scope
+            };
+            scope.set(stmt.name, fnObj);
+            return null;
+          }
+        }
+        return null;
+      }
+
+      async function assignTarget(target, val, scope, runtime, line) {
+        if (target.type === "Ident") {
+          scope.set(target.name, val);
+          return;
+        }
+        if (target.type === "TupleLiteral") {
+          const items = toIterableArray(val, line);
+          if (items.length !== target.items.length) {
+            throw new PyError(
+              "Помилка розпакування значень (ValueError)",
+              `Зліва від «=» вказано ${target.items.length} змінних, а справа — ${items.length} значень.`,
+              line,
+              "Кількість змінних зліва і значень справа має бути однаковою."
+            );
+          }
+          for (let i = 0; i < target.items.length; i++) {
+            await assignTarget(target.items[i], items[i], scope, runtime, line);
+          }
+          return;
+        }
+        if (target.type === "Index") {
+          const container = await evalExpr(target.obj, scope, runtime);
+          const idxVal = await evalExpr(target.index, scope, runtime);
+          if (container && container.__pyType === "tk_widget") {
+            const propName = pyStr(idxVal);
+            await callPyFunction(container.attrs.config, [], { [propName]: val }, line, runtime);
+            return;
+          }
+          if (isTuple(container)) {
+            throw new PyError(
+              "Кортеж не можна змінювати (TypeError)",
+              "Ти намагаєшся змінити елемент кортежу (tuple), але кортежі в Python незмінні.",
+              line,
+              "Якщо потрібно змінювати елементи, використовуй список у квадратних дужках [ ], а не кортеж ( )."
+            );
+          }
+          if (typeof container === "string") {
+            throw new PyError(
+              "Рядок не можна змінювати посимвольно (TypeError)",
+              "У Python окремий символ рядка (str) не можна замінити через str[i] = ...",
+              line,
+              "Створи новий рядок або перетвори рядок на список: list(s)."
+            );
+          }
+          if (!Array.isArray(container)) {
+            throw new PyError(
+              "Неможливо змінити за індексом (TypeError)",
+              `Тип «${pyTypeName(container)}» не підтримує зміну елемента за індексом.`,
+              line,
+              "Використовуй список [ ] для зберігання змінних елементів."
+            );
+          }
+          const idx = normalizeIndex(idxVal, container.length, line, "списку");
+          container[idx] = val;
+          return;
+        }
+        throw new PyError(
+          "Помилка присвоєння (SyntaxError)",
+          "Ліва частина присвоєння не може бути числом або виразом.",
+          line,
+          "Зліва від «=» вкажи назву змінної або елемент списку (наприклад, a[0] = 5)."
+        );
+      }
+
+      async function evalExpr(node, scope, runtime) {
+        switch (node.type) {
+          case "Literal":
+            return node.value;
+          case "Ident":
+            return scope.get(node.name, node.line);
+          case "ListLiteral": {
+            const out = [];
+            for (const item of node.items) out.push(await evalExpr(item, scope, runtime));
+            return out;
+          }
+          case "TupleLiteral": {
+            const out = [];
+            for (const item of node.items) out.push(await evalExpr(item, scope, runtime));
+            return makeTuple(out);
+          }
+          case "ListComp": {
+            const out = [];
+            const iterArr = toIterableArray(await evalExpr(node.iter, scope, runtime), node.line);
+            const compScope = new Scope(scope);
+            for (const item of iterArr) {
+              compScope.set(node.varName, item);
+              if (node.cond) {
+                if (!isTruthy(await evalExpr(node.cond, compScope, runtime))) continue;
+              }
+              out.push(await evalExpr(node.elt, compScope, runtime));
+            }
+            return out;
+          }
+          case "FString": {
+            return await evalFString(node.value, scope, runtime, node.line);
+          }
+          case "Unary": {
+            const v = await evalExpr(node.arg, scope, runtime);
+            if (node.op === "not") return !isTruthy(v);
+            if (!isPyNumber(v)) {
+              throw new PyError("Помилка унарного оператора (TypeError)", `Оператор «${node.op}» працює лише з числами.`, node.line, "Перевір тип змінної.");
+            }
+            return node.op === "-" ? -toNum(v) : +toNum(v);
+          }
+          case "Binary": {
+            const l = await evalExpr(node.left, scope, runtime);
+            const r = await evalExpr(node.right, scope, runtime);
+            return evalBinaryOp(node.op, l, r, node.line);
+          }
+          case "Logical": {
+            const l = await evalExpr(node.left, scope, runtime);
+            if (node.op === "and") {
+              return isTruthy(l) ? await evalExpr(node.right, scope, runtime) : l;
+            }
+            return isTruthy(l) ? l : await evalExpr(node.right, scope, runtime);
+          }
+          case "Compare": {
+            let prev = await evalExpr(node.left, scope, runtime);
+            for (let i = 0; i < node.ops.length; i++) {
+              const cur = await evalExpr(node.rights[i], scope, runtime);
+              const op = node.ops[i];
+              let ok = false;
+              if (op === "==") ok = pyEqual(prev, cur);
+              else if (op === "!=") ok = !pyEqual(prev, cur);
+              else if (op === "<") ok = pyCompare(prev, cur, node.line) < 0;
+              else if (op === "<=") ok = pyCompare(prev, cur, node.line) <= 0;
+              else if (op === ">") ok = pyCompare(prev, cur, node.line) > 0;
+              else if (op === ">=") ok = pyCompare(prev, cur, node.line) >= 0;
+              else if (op === "in" || op === "not in") {
+                let found = false;
+                if (typeof cur === "string") {
+                  if (typeof prev !== "string") {
+                    throw new PyError("Помилка оператора in (TypeError)", "Ліворуч від in для рядка теж має бути рядок.", node.line, "Використовуй str(...) для перетворення.");
+                  }
+                  found = cur.includes(prev);
+                } else {
+                  const arr = toIterableArray(cur, node.line);
+                  found = arr.some(x => pyEqual(x, prev));
+                }
+                ok = op === "in" ? found : !found;
+              }
+              if (!ok) return false;
+              prev = cur;
+            }
+            return true;
+          }
+          case "Index": {
+            const obj = await evalExpr(node.obj, scope, runtime);
+            const idxVal = await evalExpr(node.index, scope, runtime);
+            if (obj && obj.__pyType === "tk_widget") {
+              const propName = pyStr(idxVal);
+              if (propName in obj.props) return obj.props[propName];
+              return "";
+            }
+            if (Array.isArray(obj)) {
+              const i = normalizeIndex(idxVal, obj.length, node.line, "списку");
+              return obj[i];
+            }
+            if (isTuple(obj)) {
+              const i = normalizeIndex(idxVal, obj.items.length, node.line, "кортежу");
+              return obj.items[i];
+            }
+            if (typeof obj === "string") {
+              const i = normalizeIndex(idxVal, obj.length, node.line, "рядка");
+              return obj[i];
+            }
+            throw new PyError(
+              "Неможливо взяти індекс (TypeError)",
+              `Тип «${pyTypeName(obj)}» не підтримує індексацію [...].`,
+              node.line,
+              "Індексація працює зі списками, кортежами та рядками."
+            );
+          }
+          case "Slice": {
+            const obj = await evalExpr(node.obj, scope, runtime);
+            const s = node.start ? await evalExpr(node.start, scope, runtime) : null;
+            const e = node.stop ? await evalExpr(node.stop, scope, runtime) : null;
+            const st = node.step ? await evalExpr(node.step, scope, runtime) : null;
+            return evalSlice(obj, s, e, st, node.line);
+          }
+          case "Attr": {
+            const obj = await evalExpr(node.obj, scope, runtime);
+            return resolveAttr(obj, node.name, node.line);
+          }
+          case "Call": {
+            const callee = await evalExpr(node.callee, scope, runtime);
+            const args = [];
+            for (const a of node.args) args.push(await evalExpr(a, scope, runtime));
+            const kwargs = {};
+            for (const [k, vNode] of Object.entries(node.kwargs)) {
+              kwargs[k] = await evalExpr(vNode, scope, runtime);
+            }
+            return await callPyFunction(callee, args, kwargs, node.line, runtime);
+          }
+        }
+        return null;
+      }
+
+      async function evalFString(template, scope, runtime, line) {
+        let result = "";
+        let i = 0;
+        while (i < template.length) {
+          const ch = template[i];
+          if (ch === "{") {
+            if (template[i + 1] === "{") {
+              result += "{";
+              i += 2;
+              continue;
+            }
+            let depth = 1;
+            let j = i + 1;
+            let quote = null;
+            while (j < template.length && depth > 0) {
+              const c = template[j];
+              if (quote) {
+                if (c === "\\") { j += 2; continue; }
+                if (c === quote) quote = null;
+              } else {
+                if (c === "\"" || c === "'") quote = c;
+                else if (c === "{") depth++;
+                else if (c === "}") depth--;
+              }
+              j++;
+            }
+            if (depth !== 0) {
+              throw new PyError("Помилка в f-рядку (SyntaxError)", "Незакрита фігурна дужка { } всередині f-рядка.", line, "Закрий дужку } після виразу.");
+            }
+            const exprText = template.slice(i + 1, j - 1).trim();
+            if (!exprText) {
+              throw new PyError("Порожні дужки у f-рядку", "Всередині { } у f-рядку має бути змінна або вираз.", line, "Наприклад: f\"Результат: {x}\"");
+            }
+            const exprTokens = tokenize(exprText);
+            const exprAst = parse(exprTokens);
+            if (exprAst.body.length === 1 && exprAst.body[0].type === "ExprStmt") {
+              const val = await evalExpr(exprAst.body[0].expr, scope, runtime);
+              result += pyStr(val);
+            }
+            i = j;
+            continue;
+          }
+          if (ch === "}" && template[i + 1] === "}") {
+            result += "}";
+            i += 2;
+            continue;
+          }
+          result += ch;
+          i++;
+        }
+        return result;
+      }
+
+      function evalBinaryOp(op, l, r, line) {
+        if (op === "+") {
+          if (isPyNumber(l) && isPyNumber(r)) return toNum(l) + toNum(r);
+          if (typeof l === "string" && typeof r === "string") return l + r;
+          if (Array.isArray(l) && Array.isArray(r)) return [...l, ...r];
+          if (isTuple(l) && isTuple(r)) return makeTuple([...l.items, ...r.items]);
+          throw new PyError(
+            "Неможливо додати різні типи (TypeError)",
+            `Не можна застосувати «+» між «${pyTypeName(l)}» та «${pyTypeName(r)}».`,
+            line,
+            "Додавати можна число з числом, рядок з рядком або список зі списком. Щоб поєднати текст і число, перетвори число через str()."
+          );
+        }
+        if (op === "*") {
+          if (isPyNumber(l) && isPyNumber(r)) return toNum(l) * toNum(r);
+          if (typeof l === "string" && Number.isInteger(r)) return r > 0 ? l.repeat(r) : "";
+          if (Number.isInteger(l) && typeof r === "string") return l > 0 ? r.repeat(l) : "";
+          if (Array.isArray(l) && Number.isInteger(r)) {
+            const out = [];
+            for (let i = 0; i < r; i++) out.push(...l);
+            return out;
+          }
+          if (Number.isInteger(l) && Array.isArray(r)) {
+            const out = [];
+            for (let i = 0; i < l; i++) out.push(...r);
+            return out;
+          }
+          if (isTuple(l) && Number.isInteger(r)) {
+            const out = [];
+            for (let i = 0; i < r; i++) out.push(...l.items);
+            return makeTuple(out);
+          }
+          throw new PyError("Помилка множення (TypeError)", `Не можна помножити «${pyTypeName(l)}» на «${pyTypeName(r)}».`, line, "Перевір типи значень.");
+        }
+
+        if (!isPyNumber(l) || !isPyNumber(r)) {
+          throw new PyError("Арифметична помилка (TypeError)", `Операція «${op}» працює лише з числами, а отримано «${pyTypeName(l)}» та «${pyTypeName(r)}».`, line, "Якщо число прийшло з input(), перетвори його функцією int() або float().");
+        }
+        const a = toNum(l), b = toNum(r);
+        if (op === "-") return a - b;
+        if (op === "**") return Math.pow(a, b);
+        if (op === "/" || op === "//" || op === "%") {
+          if (b === 0) {
+            throw new PyError(
+              "Ділення на нуль (ZeroDivisionError)",
+              "На нуль ділити не можна!",
+              line,
+              "Перевір дільник або додай перевірку `if b != 0:` перед діленням."
+            );
+          }
+          if (op === "/") return a / b;
+          if (op === "//") return Math.floor(a / b);
+          if (op === "%") return ((a % b) + b) % b;
+        }
+        return 0;
+      }
+
+      function evalSlice(obj, start, stop, step, line) {
+        const isStr = typeof obj === "string";
+        const isTup = isTuple(obj);
+        if (!Array.isArray(obj) && !isStr && !isTup) {
+          throw new PyError("Помилка зрізу (TypeError)", `Тип «${pyTypeName(obj)}» не підтримує зрізи [:].`, line, "Зрізи працюють зі списками, кортежами та рядками.");
+        }
+        const arr = isStr ? obj.split("") : isTup ? obj.items : obj;
+        const len = arr.length;
+        const st = step === null ? 1 : step;
+        if (!Number.isInteger(st) || st === 0) {
+          throw new PyError("Помилка кроку зрізу", "Крок зрізу має бути ненульовим цілим числом.", line, "Приклад правильного зрізу: a[1:4] або a[::-1]");
+        }
+        let s, e;
+        if (st > 0) {
+          s = start === null ? 0 : (start < 0 ? Math.max(0, len + start) : Math.min(len, start));
+          e = stop === null ? len : (stop < 0 ? Math.max(0, len + stop) : Math.min(len, stop));
+        } else {
+          s = start === null ? len - 1 : (start < 0 ? Math.max(-1, len + start) : Math.min(len - 1, start));
+          e = stop === null ? -1 : (stop < 0 ? Math.max(-1, len + stop) : Math.min(len - 1, stop));
+        }
+        const out = [];
+        if (st > 0) {
+          for (let i = s; i < e; i += st) out.push(arr[i]);
+        } else {
+          for (let i = s; i > e; i += st) out.push(arr[i]);
+        }
+        if (isStr) return out.join("");
+        if (isTup) return makeTuple(out);
+        return out;
+      }
+
+      function resolveAttr(obj, name, line) {
+        if (obj && obj.__pyType === "module") {
+          if (name in obj.attrs) return obj.attrs[name];
+          throw new PyError(
+            "Невідома команда модуля (AttributeError)",
+            `У модулі «${obj.name}» немає команди або значення «${name}».`,
+            line,
+            `Перевір правильність написання команди після «${obj.name}.».`
+          );
+        }
+
+        if (obj && obj.__pyType === "tk_widget") {
+          if (name in obj.attrs) return obj.attrs[name];
+          if (name.startsWith("create_")) {
+            throw new PyError(
+              "Метод малювання доступний лише для Canvas",
+              `Ти викликаєш «.${name}()» на об'єкті «${obj.kind}», а не на полотні Canvas.`,
+              line,
+              "Спочатку створи полотно: canvas = Canvas(root, width=280, height=200), а потім викликай canvas." + name + "(...)."
+            );
+          }
+          throw new PyError(
+            "Невідомий метод віджета (AttributeError)",
+            `Віджет «${obj.kind}» не має методу «${name}».`,
+            line,
+            "Перевір назву методу (наприклад: .pack(), .place(), .config(), .get())."
+          );
+        }
+
+        if (isTuple(obj)) {
+          if (name === "count") {
+            return fnWrapper("tuple.count", async (args) => obj.items.filter(x => pyEqual(x, args[0])).length);
+          }
+          if (name === "index") {
+            return fnWrapper("tuple.index", async (args, _, callLine) => {
+              const i = obj.items.findIndex(x => pyEqual(x, args[0]));
+              if (i === -1) throw new PyError("Елемент не знайдено (ValueError)", `Значення «${pyStr(args[0])}» немає у кортежі.`, callLine, "Перевір значення або перевір наявність через оператор in.");
+              return i;
+            });
+          }
+          if (["append", "insert", "remove", "pop", "sort", "reverse", "clear"].includes(name)) {
+            throw new PyError(
+              "Кортеж не можна змінювати (AttributeError / TypeError)",
+              `Метод «.${name}()» змінює елементи, тому він працює лише зі списками, а не з кортежами (tuple).`,
+              line,
+              "Заміни круглі дужки () на квадратні [], щоб створити список."
+            );
+          }
+        }
+
+        if (Array.isArray(obj)) {
+          switch (name) {
+            case "append":
+              return fnWrapper("list.append", async (args, _, cl) => {
+                if (args.length !== 1) throw new PyError("Помилка .append()", ".append() додає рівно 1 елемент.", cl, "Приклад: a.append(10)");
+                obj.push(args[0]);
+                return null;
+              });
+            case "insert":
+              return fnWrapper("list.insert", async (args, _, cl) => {
+                if (args.length !== 2 || !Number.isInteger(args[0])) throw new PyError("Помилка .insert()", ".insert(індекс, значення) очікує індекс і значення.", cl, "Приклад: a.insert(0, 99)");
+                const pos = args[0] < 0 ? Math.max(0, obj.length + args[0]) : Math.min(obj.length, args[0]);
+                obj.splice(pos, 0, args[1]);
+                return null;
+              });
+            case "remove":
+              return fnWrapper("list.remove", async (args, _, cl) => {
+                if (args.length !== 1) throw new PyError("Помилка .remove()", ".remove(значення) очікує 1 аргумент.", cl, "Приклад: a.remove(5)");
+                const i = obj.findIndex(x => pyEqual(x, args[0]));
+                if (i === -1) throw new PyError("Елемент не знайдено (ValueError)", `Елемент «${pyStr(args[0])}» відсутній у списку, тому .remove() не може його видалити.`, cl, "Перед видаленням можна перевірити: if x in a: a.remove(x)");
+                obj.splice(i, 1);
+                return null;
+              });
+            case "pop":
+              return fnWrapper("list.pop", async (args, _, cl) => {
+                if (obj.length === 0) throw new PyError("Порожній список (IndexError)", "Неможливо видалити елемент за допомогою .pop(), бо список порожній.", cl, "Перевір довжину списку через len(a) > 0.");
+                if (args.length === 0) return obj.pop();
+                const i = normalizeIndex(args[0], obj.length, cl, "списку");
+                return obj.splice(i, 1)[0];
+              });
+            case "sort":
+              return fnWrapper("list.sort", async (_, kwargs, cl) => {
+                const rev = kwargs.reverse ? isTruthy(kwargs.reverse) : false;
+                obj.sort((a, b) => rev ? pyCompare(b, a, cl) : pyCompare(a, b, cl));
+                return null;
+              });
+            case "reverse":
+              return fnWrapper("list.reverse", async () => { obj.reverse(); return null; });
+            case "index":
+              return fnWrapper("list.index", async (args, _, cl) => {
+                if (args.length !== 1) throw new PyError("Помилка .index()", ".index(значення) очікує 1 аргумент.", cl, "Приклад: a.index(10)");
+                const i = obj.findIndex(x => pyEqual(x, args[0]));
+                if (i === -1) throw new PyError("Елемент не знайдено (ValueError)", `Значення «${pyStr(args[0])}» відсутнє у списку.`, cl, "Перевір наявність через `in` перед викликом .index().");
+                return i;
+              });
+            case "count":
+              return fnWrapper("list.count", async (args) => obj.filter(x => pyEqual(x, args[0])).length);
+            case "clear":
+              return fnWrapper("list.clear", async () => { obj.length = 0; return null; });
+            case "copy":
+              return fnWrapper("list.copy", async () => [...obj]);
+          }
+        }
+
+        if (typeof obj === "string") {
+          switch (name) {
+            case "upper": return fnWrapper("str.upper", async () => obj.toUpperCase());
+            case "lower": return fnWrapper("str.lower", async () => obj.toLowerCase());
+            case "strip": return fnWrapper("str.strip", async () => obj.trim());
+            case "split": return fnWrapper("str.split", async (args) => args[0] !== undefined ? obj.split(pyStr(args[0])) : (obj.trim() ? obj.trim().split(/\s+/) : []));
+            case "join": return fnWrapper("str.join", async (args, _, cl) => toIterableArray(args[0], cl).map(x => pyStr(x)).join(obj));
+            case "replace": return fnWrapper("str.replace", async (args) => obj.split(pyStr(args[0])).join(pyStr(args[1])));
+            case "isdigit": return fnWrapper("str.isdigit", async () => /^\d+$/.test(obj));
+          }
+        }
+
+        if (name.startsWith("create_")) {
+          throw new PyError(
+            "Об'єкт Canvas не створено",
+            `Ти намагаєшся викликати «.${name}()» для об'єкта типу «${pyTypeName(obj)}», а не для полотна Canvas.`,
+            line,
+            "Спочатку створи полотно командою canvas = Canvas(root, width=280, height=200) та розмісти його через canvas.pack()."
+          );
+        }
+
+        throw new PyError(
+          "Невідомий метод або властивість (AttributeError)",
+          `Об'єкт типу «${pyTypeName(obj)}» не має методу або властивості «${name}».`,
+          line,
+          "Перевір назву методу або тип змінної, до якої ти звертаєшся."
+        );
+      }
+
+      async function callPyFunction(callee, args, kwargs, line, runtime) {
+        if (!callee || callee.__pyType !== "function") {
+          throw new PyError(
+            "Об'єкт не є функцією (TypeError)",
+            `Значення типу «${pyTypeName(callee)}» не можна викликати як функцію з дужками ().`,
+            line,
+            "Перевір, чи не назвав(-ла) ти змінну так само, як функцію (наприклад, list = ... або sum = ...)."
+          );
+        }
+        if (callee.isNative) {
+          return await callee.impl(args, kwargs, line);
+        }
+        runtime.callDepth++;
+        if (runtime.callDepth > 120) {
+          throw new PyError("Переповнення стеку викликів (RecursionError)", "Функція викликає сама себе занадто багато разів.", line, "Додай умову виходу з рекурсії.");
+        }
+        try {
+          const fnScope = new Scope(callee.closure);
+          for (let i = 0; i < callee.params.length; i++) {
+            const p = callee.params[i];
+            if (i < args.length) {
+              fnScope.set(p.name, args[i]);
+            } else if (p.name in kwargs) {
+              fnScope.set(p.name, kwargs[p.name]);
+            } else if (callee.defaults[i] !== undefined) {
+              fnScope.set(p.name, callee.defaults[i]);
+            } else {
+              throw new PyError(
+                "Не вистачає аргументів функції (TypeError)",
+                `Функція «${callee.name}()» очікує параметр «${p.name}», але його не передали при виклику.`,
+                line,
+                `Передай потрібні значення у дужках: ${callee.name}(...).`
+              );
+            }
+          }
+          if (args.length > callee.params.length) {
+            throw new PyError(
+              "Забагато аргументів функції (TypeError)",
+              `Функція «${callee.name}()» приймає ${callee.params.length} аргументів, а передано ${args.length}.`,
+              line,
+              "Перевір кількість значень у круглих дужках при виклику функції."
+            );
+          }
+          const res = await execBlock(callee.body, fnScope, runtime);
+          if (res && res.__return) return res.value;
+          return null;
+        } finally {
+          runtime.callDepth--;
+        }
+      }
+
+      /* ============================================================
+         14. RUN / STOP CONTROL
+         ============================================================ */
+      function stopExecution() {
+        currentRunId++;
+        isRunning = false;
+        runBtn.classList.remove("running");
+        runBtnLabel.textContent = "Запустити";
+        if (pendingInputReject) {
+          const rej = pendingInputReject;
+          pendingInputResolve = null;
+          pendingInputReject = null;
+          inputPromptBox.classList.remove("active");
+          rej(new Error("ABORTED"));
+        }
+        if (pendingMsgResolve) {
+          const res = pendingMsgResolve;
+          pendingMsgResolve = null;
+          tkMsgOverlay.classList.remove("active");
+          res();
+        }
+      }
+
+      runBtn.addEventListener("click", async () => {
+        if (isRunning) {
+          stopExecution();
+          setStatus("Зупинено", "");
+          return;
+        }
+
+        const code = codeEditor.value;
+        currentErrorLine = null;
+        updateLineNumbers();
+        resetOutputUI();
+
+        if (workspace.classList.contains("mode-code")) {
+          setViewMode("result");
+        }
+
+        if (!code.trim()) {
+          setStatus("Порожньо", "");
+          return;
+        }
+
+        const runId = ++currentRunId;
+        isRunning = true;
+        runBtn.classList.add("running");
+        runBtnLabel.textContent = "Зупинити";
+        setStatus("Виконання...", "wait");
+
+        try {
+          await executeProgram(code, runId);
+          if (runId === currentRunId) {
+            if (consoleLines.length === 0 && !tkState) {
+              consoleBox.innerHTML = `<span class="console-empty">Програма виконалась без виводу в консоль.</span>`;
+            }
+            setStatus(tkState ? "Вікно активне" : "Готово", "ok");
+          }
+        } catch (err) {
+          if (err && err.message === "ABORTED") return;
+          if (err instanceof PyError) {
+            showPyError(err);
+          } else {
+            showPyError(new PyError(
+              "Непередбачена помилка",
+              err && err.message ? err.message : "Сталася помилка під час виконання.",
+              1,
+              "Перевір синтаксис коду."
+            ));
+          }
+        } finally {
+          if (runId === currentRunId) {
+            isRunning = false;
+            runBtn.classList.remove("running");
+            runBtnLabel.textContent = "Запустити";
+          }
+        }
+      });
+
+      /* ============================================================
+         15. INITIALIZATION
+         ============================================================ */
+      function init() {
+        const savedTheme = localStorage.getItem(STORAGE_THEME_KEY) || "dark";
+        setTheme(savedTheme);
+
+        const savedMode = localStorage.getItem(STORAGE_MODE_KEY) || "split";
+        setViewMode(savedMode);
+
+        const savedCode = localStorage.getItem(STORAGE_CODE_KEY);
+        if (savedCode !== null) {
+          codeEditor.value = savedCode;
+        } else {
+          codeEditor.value = "nums = [12, 5, 19, 8]\nnums.append(25)\nprint(\"Список:\", nums)\nprint(\"Сума:\", sum(nums))";
+        }
+        pushHistory(codeEditor.value, 0, 0);
+        updateLineNumbers();
+        updateDynamicToolbars();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>

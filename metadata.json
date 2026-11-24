@@ -1,0 +1,6 @@
+{
+  "name": "PyLab 8",
+  "description": "Мобільний тренажер-пісочниця Python для 8 класу з підтримкою списків, кортежів, random, math, tkinter та Canvas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
